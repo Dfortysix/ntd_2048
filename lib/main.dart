@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'game_screen.dart';
 
-void main() {
-  runApp(const Game2048App());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
+  runApp(const Fruits2048App());
 }
 
-class Game2048App extends StatelessWidget {
-  const Game2048App({super.key});
+class Fruits2048App extends StatelessWidget {
+  const Fruits2048App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '2048 Game',
+      title: 'Fruits 2048',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF776E65),
+          seedColor: const Color(0xFF4CAF50),
           brightness: Brightness.light,
         ),
         useMaterial3: true,
       ),
-      home: const Game2048Screen(),
+      home: const Fruits2048Screen(),
     );
   }
 }

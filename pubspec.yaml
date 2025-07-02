@@ -1,5 +1,5 @@
-name: ntd_2048
-description: A new Flutter project.
+name: fruits_2048
+description: A Flutter game - Fruits 2048 with fruit theme.
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -13,14 +13,22 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_animate: ^4.2.0
   just_audio: ^0.9.36
+  google_mobile_ads: ^4.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
   build_runner: ^2.4.11
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
   assets:
     - assets/sounds/theme.mp3
+    - assets/sounds/win.mp3
+  
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/fruit.png"

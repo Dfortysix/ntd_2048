@@ -11,7 +11,7 @@ class ScoreBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFBBADA0),
+        color: const Color(0xFF4CAF50),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Column(

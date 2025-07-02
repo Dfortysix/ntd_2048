@@ -1,6 +1,6 @@
-# ntd_2048
+# Fruits 2048
 
-A new Flutter project created with FlutLab - https://flutlab.io
+A Flutter game with fruit theme - merge fruits to reach 2048! 🍎🍊🍇
 
 ## Getting Started
 

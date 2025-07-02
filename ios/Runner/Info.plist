@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ntd_2048</string>
-<key>CFBundleDisplayName</key>
-<string>ntd2048</string>
+	<string>fruits_2048</string>
+	<key>CFBundleDisplayName</key>
+	<string>Fruits 2048</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
