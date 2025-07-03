@@ -31,6 +31,10 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   late SharedPreferences prefs;
   Set<int> _justMergedSet = {};
   
+  // Quản lý id duy nhất cho mỗi Tile
+  int _nextTileId = 0;
+  Map<int, int> _tileIds = {}; // key: i*gridSize+j, value: id
+  
   // Lịch sử các bước đi để undo
   List<GameState> _gameHistory = [];
   static const int maxHistorySize = 10; // Giới hạn lịch sử
@@ -56,16 +60,16 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
   List<Tile> _buildTilesFromBoard(List<List<int>> board, {Set<int>? justMergedSet}) {
     final tiles = <Tile>[];
-    int id = 0;
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
-        if (board[i][j] != 0) {
+        int key = i * gridSize + j;
+        if (board[i][j] != 0 && _tileIds.containsKey(key)) {
           tiles.add(Tile(
-            id: id++,
+            id: _tileIds[key]!,
             value: board[i][j],
             row: i,
             col: j,
-            justMerged: justMergedSet?.contains(i * gridSize + j) ?? false,
+            justMerged: justMergedSet?.contains(key) ?? false,
           ));
         }
       }
@@ -144,6 +148,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     if (empty.isNotEmpty) {
       final pos = empty[Random().nextInt(empty.length)];
       board[pos[0]][pos[1]] = Random().nextDouble() < 0.9 ? 2 : 4;
+      _tileIds[pos[0] * gridSize + pos[1]] = _nextTileId++;
     }
   }
 
@@ -154,6 +159,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       gameOver = false;
       gameWon = false;
       _justMergedSet.clear();
+      _tileIds.clear();
+      _nextTileId = 0;
     });
     _addNewTile();
     _addNewTile();
@@ -169,28 +176,52 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveLeft() {
     bool moved = false;
     _justMergedSet.clear();
+    // Lưu lại id cũ
+    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
     for (int i = 0; i < gridSize; i++) {
       List<int> row = board[i];
-      List<int> nonZero = row.where((t) => t != 0).toList();
+      List<int?> rowIds = oldIds[i];
+      List<int> nonZero = [];
+      List<int?> nonZeroIds = [];
+      for (int j = 0; j < gridSize; j++) {
+        if (row[j] != 0) {
+          nonZero.add(row[j]);
+          nonZeroIds.add(rowIds[j]);
+        }
+      }
       List<int> newRow = [];
+      List<int?> newRowIds = [];
       int col = 0;
       while (col < nonZero.length) {
         if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
           newRow.add(nonZero[col] * 2);
+          newRowIds.add(_nextTileId++); // id mới cho merge
           _justMergedSet.add(i * gridSize + newRow.length - 1);
           score += nonZero[col];
           col += 2;
           moved = true;
         } else {
           newRow.add(nonZero[col]);
+          newRowIds.add(nonZeroIds[col]);
           col += 1;
         }
       }
-      while (newRow.length < gridSize) newRow.add(0);
+      while (newRow.length < gridSize) {
+        newRow.add(0);
+        newRowIds.add(null);
+      }
       for (int j = 0; j < gridSize; j++) {
         if (board[i][j] != newRow[j]) {
           board[i][j] = newRow[j];
           moved = true;
+        }
+        int key = i * gridSize + j;
+        if (newRow[j] != 0 && newRowIds[j] != null) {
+          _tileIds[key] = newRowIds[j]!;
+        } else if (newRow[j] != 0 && newRowIds[j] == null) {
+          _tileIds[key] = _nextTileId++;
+        } else {
+          _tileIds.remove(key);
         }
       }
     }
@@ -200,29 +231,54 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveRight() {
     bool moved = false;
     _justMergedSet.clear();
+    // Lưu lại id cũ
+    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
     for (int i = 0; i < gridSize; i++) {
       List<int> row = board[i];
-      List<int> nonZero = row.where((t) => t != 0).toList().reversed.toList();
+      List<int?> rowIds = oldIds[i];
+      List<int> nonZero = [];
+      List<int?> nonZeroIds = [];
+      for (int j = gridSize - 1; j >= 0; j--) {
+        if (row[j] != 0) {
+          nonZero.add(row[j]);
+          nonZeroIds.add(rowIds[j]);
+        }
+      }
       List<int> newRow = [];
+      List<int?> newRowIds = [];
       int col = 0;
       while (col < nonZero.length) {
         if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
           newRow.add(nonZero[col] * 2);
+          newRowIds.add(_nextTileId++); // id mới cho merge
           _justMergedSet.add(i * gridSize + (gridSize - 1 - newRow.length + 1));
           score += nonZero[col];
           col += 2;
           moved = true;
         } else {
           newRow.add(nonZero[col]);
+          newRowIds.add(nonZeroIds[col]);
           col += 1;
         }
       }
-      while (newRow.length < gridSize) newRow.add(0);
+      while (newRow.length < gridSize) {
+        newRow.add(0);
+        newRowIds.add(null);
+      }
       newRow = newRow.reversed.toList();
+      newRowIds = newRowIds.reversed.toList();
       for (int j = 0; j < gridSize; j++) {
         if (board[i][j] != newRow[j]) {
           board[i][j] = newRow[j];
           moved = true;
+        }
+        int key = i * gridSize + j;
+        if (newRow[j] != 0 && newRowIds[j] != null) {
+          _tileIds[key] = newRowIds[j]!;
+        } else if (newRow[j] != 0 && newRowIds[j] == null) {
+          _tileIds[key] = _nextTileId++;
+        } else {
+          _tileIds.remove(key);
         }
       }
     }
@@ -232,30 +288,50 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveUp() {
     bool moved = false;
     _justMergedSet.clear();
+    // Lưu lại id cũ
+    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
     for (int j = 0; j < gridSize; j++) {
       List<int> col = [];
+      List<int?> colIds = [];
       for (int i = 0; i < gridSize; i++) {
-        if (board[i][j] != 0) col.add(board[i][j]);
+        if (board[i][j] != 0) {
+          col.add(board[i][j]);
+          colIds.add(oldIds[i][j]);
+        }
       }
       List<int> newCol = [];
+      List<int?> newColIds = [];
       int row = 0;
       while (row < col.length) {
         if (row + 1 < col.length && col[row] == col[row + 1]) {
           newCol.add(col[row] * 2);
+          newColIds.add(_nextTileId++); // id mới cho merge
           _justMergedSet.add((newCol.length - 1) * gridSize + j);
           score += col[row];
           row += 2;
           moved = true;
         } else {
           newCol.add(col[row]);
+          newColIds.add(colIds[row]);
           row += 1;
         }
       }
-      while (newCol.length < gridSize) newCol.add(0);
+      while (newCol.length < gridSize) {
+        newCol.add(0);
+        newColIds.add(null);
+      }
       for (int i = 0; i < gridSize; i++) {
         if (board[i][j] != newCol[i]) {
           board[i][j] = newCol[i];
           moved = true;
+        }
+        int key = i * gridSize + j;
+        if (newCol[i] != 0 && newColIds[i] != null) {
+          _tileIds[key] = newColIds[i]!;
+        } else if (newCol[i] != 0 && newColIds[i] == null) {
+          _tileIds[key] = _nextTileId++;
+        } else {
+          _tileIds.remove(key);
         }
       }
     }
@@ -265,31 +341,52 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveDown() {
     bool moved = false;
     _justMergedSet.clear();
+    // Lưu lại id cũ
+    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
     for (int j = 0; j < gridSize; j++) {
       List<int> col = [];
-      for (int i = 0; i < gridSize; i++) {
-        if (board[i][j] != 0) col.add(board[i][j]);
+      List<int?> colIds = [];
+      for (int i = gridSize - 1; i >= 0; i--) {
+        if (board[i][j] != 0) {
+          col.add(board[i][j]);
+          colIds.add(oldIds[i][j]);
+        }
       }
       List<int> newCol = [];
-      int row = col.length - 1;
-      while (row >= 0) {
-        if (row - 1 >= 0 && col[row] == col[row - 1]) {
+      List<int?> newColIds = [];
+      int row = 0;
+      while (row < col.length) {
+        if (row + 1 < col.length && col[row] == col[row + 1]) {
           newCol.add(col[row] * 2);
+          newColIds.add(_nextTileId++); // id mới cho merge
           _justMergedSet.add((gridSize - 1 - newCol.length + 1) * gridSize + j);
           score += col[row];
-          row -= 2;
+          row += 2;
           moved = true;
         } else {
           newCol.add(col[row]);
-          row -= 1;
+          newColIds.add(colIds[row]);
+          row += 1;
         }
       }
-      while (newCol.length < gridSize) newCol.add(0);
+      while (newCol.length < gridSize) {
+        newCol.add(0);
+        newColIds.add(null);
+      }
       newCol = newCol.reversed.toList();
+      newColIds = newColIds.reversed.toList();
       for (int i = 0; i < gridSize; i++) {
         if (board[i][j] != newCol[i]) {
           board[i][j] = newCol[i];
           moved = true;
+        }
+        int key = i * gridSize + j;
+        if (newCol[i] != 0 && newColIds[i] != null) {
+          _tileIds[key] = newColIds[i]!;
+        } else if (newCol[i] != 0 && newColIds[i] == null) {
+          _tileIds[key] = _nextTileId++;
+        } else {
+          _tileIds.remove(key);
         }
       }
     }
