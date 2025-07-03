@@ -35,6 +35,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   int _nextTileId = 0;
   Map<int, int> _tileIds = {}; // key: i*gridSize+j, value: id
   
+  // Danh sách các Tile vừa bị merge để animate biến mất
+  List<Tile> _disappearingTiles = [];
+  
   // Lịch sử các bước đi để undo
   List<GameState> _gameHistory = [];
   static const int maxHistorySize = 10; // Giới hạn lịch sử
@@ -178,6 +181,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     _justMergedSet.clear();
     // Lưu lại id cũ
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
+    _disappearingTiles.clear();
     for (int i = 0; i < gridSize; i++) {
       List<int> row = board[i];
       List<int?> rowIds = oldIds[i];
@@ -194,8 +198,20 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       int col = 0;
       while (col < nonZero.length) {
         if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
+          // Lưu lại 2 Tile cũ bị merge để animate biến mất
+          int oldCol1 = -1, oldCol2 = -1;
+          for (int j2 = 0, found = 0; j2 < gridSize && found < 2; j2++) {
+            if (row[j2] == nonZero[col] && oldCol1 == -1) { oldCol1 = j2; found++; }
+            else if (row[j2] == nonZero[col + 1] && oldCol2 == -1) { oldCol2 = j2; found++; }
+          }
+          if (oldCol1 != -1 && nonZeroIds[col] != null) {
+            _disappearingTiles.add(Tile(id: nonZeroIds[col]!, value: nonZero[col], row: i, col: oldCol1, justMerged: false));
+          }
+          if (oldCol2 != -1 && nonZeroIds[col + 1] != null) {
+            _disappearingTiles.add(Tile(id: nonZeroIds[col + 1]!, value: nonZero[col + 1], row: i, col: oldCol2, justMerged: false));
+          }
           newRow.add(nonZero[col] * 2);
-          newRowIds.add(_nextTileId++); // id mới cho merge
+          newRowIds.add(nonZeroIds[col]); // Giữ lại id của Tile bên trái
           _justMergedSet.add(i * gridSize + newRow.length - 1);
           score += nonZero[col];
           col += 2;
@@ -231,8 +247,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveRight() {
     bool moved = false;
     _justMergedSet.clear();
-    // Lưu lại id cũ
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
+    _disappearingTiles.clear();
     for (int i = 0; i < gridSize; i++) {
       List<int> row = board[i];
       List<int?> rowIds = oldIds[i];
@@ -249,8 +265,20 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       int col = 0;
       while (col < nonZero.length) {
         if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
+          // Lưu lại 2 Tile cũ bị merge để animate biến mất
+          int oldCol1 = -1, oldCol2 = -1;
+          for (int j2 = gridSize - 1, found = 0; j2 >= 0 && found < 2; j2--) {
+            if (row[j2] == nonZero[col] && oldCol1 == -1) { oldCol1 = j2; found++; }
+            else if (row[j2] == nonZero[col + 1] && oldCol2 == -1) { oldCol2 = j2; found++; }
+          }
+          if (oldCol1 != -1 && nonZeroIds[col] != null) {
+            _disappearingTiles.add(Tile(id: nonZeroIds[col]!, value: nonZero[col], row: i, col: oldCol1, justMerged: false));
+          }
+          if (oldCol2 != -1 && nonZeroIds[col + 1] != null) {
+            _disappearingTiles.add(Tile(id: nonZeroIds[col + 1]!, value: nonZero[col + 1], row: i, col: oldCol2, justMerged: false));
+          }
           newRow.add(nonZero[col] * 2);
-          newRowIds.add(_nextTileId++); // id mới cho merge
+          newRowIds.add(nonZeroIds[col]); // Giữ lại id của Tile bên phải
           _justMergedSet.add(i * gridSize + (gridSize - 1 - newRow.length + 1));
           score += nonZero[col];
           col += 2;
@@ -288,8 +316,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveUp() {
     bool moved = false;
     _justMergedSet.clear();
-    // Lưu lại id cũ
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
+    _disappearingTiles.clear();
     for (int j = 0; j < gridSize; j++) {
       List<int> col = [];
       List<int?> colIds = [];
@@ -304,8 +332,20 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       int row = 0;
       while (row < col.length) {
         if (row + 1 < col.length && col[row] == col[row + 1]) {
+          // Lưu lại 2 Tile cũ bị merge để animate biến mất
+          int oldRow1 = -1, oldRow2 = -1;
+          for (int i2 = 0, found = 0; i2 < gridSize && found < 2; i2++) {
+            if (board[i2][j] == col[row] && oldRow1 == -1) { oldRow1 = i2; found++; }
+            else if (board[i2][j] == col[row + 1] && oldRow2 == -1) { oldRow2 = i2; found++; }
+          }
+          if (oldRow1 != -1 && colIds[row] != null) {
+            _disappearingTiles.add(Tile(id: colIds[row]!, value: col[row], row: oldRow1, col: j, justMerged: false));
+          }
+          if (oldRow2 != -1 && colIds[row + 1] != null) {
+            _disappearingTiles.add(Tile(id: colIds[row + 1]!, value: col[row + 1], row: oldRow2, col: j, justMerged: false));
+          }
           newCol.add(col[row] * 2);
-          newColIds.add(_nextTileId++); // id mới cho merge
+          newColIds.add(colIds[row]); // Giữ lại id của Tile phía trên
           _justMergedSet.add((newCol.length - 1) * gridSize + j);
           score += col[row];
           row += 2;
@@ -341,8 +381,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   bool _moveDown() {
     bool moved = false;
     _justMergedSet.clear();
-    // Lưu lại id cũ
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
+    _disappearingTiles.clear();
     for (int j = 0; j < gridSize; j++) {
       List<int> col = [];
       List<int?> colIds = [];
@@ -357,8 +397,20 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       int row = 0;
       while (row < col.length) {
         if (row + 1 < col.length && col[row] == col[row + 1]) {
+          // Lưu lại 2 Tile cũ bị merge để animate biến mất
+          int oldRow1 = -1, oldRow2 = -1;
+          for (int i2 = gridSize - 1, found = 0; i2 >= 0 && found < 2; i2--) {
+            if (board[i2][j] == col[row] && oldRow1 == -1) { oldRow1 = i2; found++; }
+            else if (board[i2][j] == col[row + 1] && oldRow2 == -1) { oldRow2 = i2; found++; }
+          }
+          if (oldRow1 != -1 && colIds[row] != null) {
+            _disappearingTiles.add(Tile(id: colIds[row]!, value: col[row], row: oldRow1, col: j, justMerged: false));
+          }
+          if (oldRow2 != -1 && colIds[row + 1] != null) {
+            _disappearingTiles.add(Tile(id: colIds[row + 1]!, value: col[row + 1], row: oldRow2, col: j, justMerged: false));
+          }
           newCol.add(col[row] * 2);
-          newColIds.add(_nextTileId++); // id mới cho merge
+          newColIds.add(colIds[row]); // Giữ lại id của Tile phía dưới
           _justMergedSet.add((gridSize - 1 - newCol.length + 1) * gridSize + j);
           score += col[row];
           row += 2;
@@ -412,6 +464,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         });
         isMoving = false;
       });
+      _clearDisappearingTiles();
     }
   }
 
@@ -712,6 +765,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                               child: GameBoard(
                                 tiles: tiles,
                                 getTileColor: _getTileColor,
+                                disappearingTiles: _disappearingTiles,
                               ),
                             ),
                           ),
@@ -915,5 +969,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         ),
       );
     });
+  }
+
+  // Sau khi merge, xóa _disappearingTiles sau khi animation kết thúc
+  void _clearDisappearingTiles() {
+    if (_disappearingTiles.isNotEmpty) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (mounted) setState(() => _disappearingTiles.clear());
+      });
+    }
   }
 } 

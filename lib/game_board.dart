@@ -10,12 +10,18 @@ class Tile {
   const Tile({required this.id, required this.value, required this.row, required this.col, this.justMerged = false});
 }
 
-class GameBoard extends StatelessWidget {
+class GameBoard extends StatefulWidget {
   final List<Tile> tiles;
   final Color Function(int) getTileColor;
   final int gridSize;
-  const GameBoard({super.key, required this.tiles, required this.getTileColor, this.gridSize = 4});
+  final List<Tile> disappearingTiles;
+  const GameBoard({super.key, required this.tiles, required this.getTileColor, this.gridSize = 4, this.disappearingTiles = const []});
 
+  @override
+  State<GameBoard> createState() => _GameBoardState();
+}
+
+class _GameBoardState extends State<GameBoard> {
   @override
   Widget build(BuildContext context) {
     const double tileSize = 320 / 4 - 6; // 320 là kích thước board, 6 là spacing
@@ -29,8 +35,8 @@ class GameBoard extends StatelessWidget {
       child: Stack(
         children: [
           // Nền lưới
-          for (int r = 0; r < gridSize; r++)
-            for (int c = 0; c < gridSize; c++)
+          for (int r = 0; r < widget.gridSize; r++)
+            for (int c = 0; c < widget.gridSize; c++)
               Positioned(
                 left: c * (tileSize + 6) + 8,
                 top: r * (tileSize + 6) + 8,
@@ -38,46 +44,95 @@ class GameBoard extends StatelessWidget {
                   width: tileSize,
                   height: tileSize,
                   decoration: BoxDecoration(
-                    color: getTileColor(0),
+                    color: widget.getTileColor(0),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               ),
           // Các tile động
-          for (final tile in tiles.where((t) => t.value > 0))
+          for (final tile in widget.tiles.where((t) => t.value > 0))
             AnimatedPositioned(
               key: ValueKey(tile.id),
-              duration: const Duration(milliseconds: 180),
+              duration: const Duration(milliseconds: 240),
               curve: Curves.easeInOut,
               left: tile.col * (tileSize + 6) + 8,
               top: tile.row * (tileSize + 6) + 8,
               child: AnimatedScale(
                 scale: tile.justMerged ? 1.18 : 1.0,
-                duration: const Duration(milliseconds: 160),
+                duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOutBack,
-                child: Container(
-                  width: tileSize,
-                  height: tileSize,
-                  decoration: BoxDecoration(
-                    color: getTileColor(tile.value),
-                    borderRadius: BorderRadius.circular(4),
-                    border: tile.value >= 1024
-                        ? Border.all(color: Colors.amberAccent, width: 3)
-                        : null,
+                child: RepaintBoundary(
+                  child: Container(
+                    width: tileSize,
+                    height: tileSize,
+                    decoration: BoxDecoration(
+                      color: widget.getTileColor(tile.value),
+                      borderRadius: BorderRadius.circular(4),
+                      border: tile.value >= 1024
+                          ? Border.all(color: Colors.amberAccent, width: 3)
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(
+                        FruitTile.getDisplayText(tile.value),
+                        style: const TextStyle(
+                          fontSize: 44,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 8,
+                              color: Colors.black26,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Center(
-                    child: Text(
-                      FruitTile.getDisplayText(tile.value),
-                      style: const TextStyle(
-                        fontSize: 44,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8,
-                            color: Colors.black26,
-                            offset: Offset(2, 2),
+                ),
+              ),
+            ),
+          // Các tile đang biến mất (merge)
+          for (final tile in widget.disappearingTiles)
+            AnimatedPositioned(
+              key: ValueKey('disappear_${tile.id}'),
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeInOut,
+              left: tile.col * (tileSize + 6) + 8,
+              top: tile.row * (tileSize + 6) + 8,
+              child: AnimatedScale(
+                scale: 0.0,
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeIn,
+                child: AnimatedOpacity(
+                  opacity: 0.0,
+                  duration: const Duration(milliseconds: 150),
+                  child: RepaintBoundary(
+                    child: Container(
+                      width: tileSize,
+                      height: tileSize,
+                      decoration: BoxDecoration(
+                        color: widget.getTileColor(tile.value),
+                        borderRadius: BorderRadius.circular(4),
+                        border: tile.value >= 1024
+                            ? Border.all(color: Colors.amberAccent, width: 3)
+                            : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          FruitTile.getDisplayText(tile.value),
+                          style: const TextStyle(
+                            fontSize: 44,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 8,
+                                color: Colors.black26,
+                                offset: Offset(2, 2),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
