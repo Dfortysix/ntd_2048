@@ -12,6 +12,8 @@ import 'fireworks_effect.dart';
 import 'ad_manager.dart';
 import 'banner_ad_widget.dart';
 import 'game_state.dart';
+import 'package:provider/provider.dart';
+import 'game_state_provider.dart';
 
 class Fruits2048Screen extends StatefulWidget {
   const Fruits2048Screen({super.key});
@@ -492,6 +494,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
   @override
   Widget build(BuildContext context) {
+    final gameState = context.watch<GameStateProvider>();
     return Scaffold(
       backgroundColor: Colors.transparent, // Để gradient hiển thị
       appBar: AppBar(
@@ -516,7 +519,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
               icon: const Icon(Icons.play_circle_outline),
               tooltip: 'Xem quảng cáo để nhận lượt trợ giúp',
             ),
-          IconButton(onPressed: _resetGame, icon: const Icon(Icons.refresh)),
+          IconButton(onPressed: () => gameState.resetGame(), icon: const Icon(Icons.refresh)),
         ],
       ),
       body: Stack(

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 import 'game_screen.dart';
+import 'game_state_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-  runApp(const Fruits2048App());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => GameStateProvider(),
+      child: const Fruits2048App(),
+    ),
+  );
 }
 
 class Fruits2048App extends StatelessWidget {

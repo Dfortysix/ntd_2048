@@ -45,46 +45,91 @@ class GameBoard extends StatelessWidget {
               ),
           // Các tile động
           for (final tile in tiles.where((t) => t.value > 0))
-            AnimatedPositioned(
+            _AnimatedTile(
               key: ValueKey(tile.id),
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeInOut,
-              left: tile.col * (tileSize + 6) + 8,
-              top: tile.row * (tileSize + 6) + 8,
-              child: AnimatedScale(
-                scale: tile.justMerged ? 1.18 : 1.0,
-                duration: const Duration(milliseconds: 160),
-                curve: Curves.easeOutBack,
-                child: Container(
-                  width: tileSize,
-                  height: tileSize,
-                  decoration: BoxDecoration(
-                    color: getTileColor(tile.value),
-                    borderRadius: BorderRadius.circular(4),
-                    border: tile.value >= 1024
-                        ? Border.all(color: Colors.amberAccent, width: 3)
-                        : null,
-                  ),
-                  child: Center(
-                    child: Text(
-                      FruitTile.getDisplayText(tile.value),
-                      style: const TextStyle(
-                        fontSize: 44,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8,
-                            color: Colors.black26,
-                            offset: Offset(2, 2),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              tile: tile,
+              tileSize: tileSize,
+              getTileColor: getTileColor,
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _AnimatedTile extends StatefulWidget {
+  final Tile tile;
+  final double tileSize;
+  final Color Function(int) getTileColor;
+  const _AnimatedTile({Key? key, required this.tile, required this.tileSize, required this.getTileColor}) : super(key: key);
+
+  @override
+  State<_AnimatedTile> createState() => _AnimatedTileState();
+}
+
+class _AnimatedTileState extends State<_AnimatedTile> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeInOut,
+      left: widget.tile.col * (widget.tileSize + 6) + 8,
+      top: widget.tile.row * (widget.tileSize + 6) + 8,
+      child: RepaintBoundary(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+          child: widget.tile.justMerged
+              ? TweenAnimationBuilder<double>(
+                  key: ValueKey('merge_${widget.tile.id}_${widget.tile.value}'),
+                  tween: Tween<double>(begin: 1.25, end: 1.0),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: child,
+                    );
+                  },
+                  child: _tileContent(),
+                )
+              : Container(
+                  key: ValueKey('tile_${widget.tile.id}_${widget.tile.value}'),
+                  child: _tileContent(),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tileContent() {
+    return Container(
+      width: widget.tileSize,
+      height: widget.tileSize,
+      decoration: BoxDecoration(
+        color: widget.getTileColor(widget.tile.value),
+        borderRadius: BorderRadius.circular(4),
+        border: widget.tile.value >= 1024
+            ? Border.all(color: Colors.amberAccent, width: 3)
+            : null,
+      ),
+      child: Center(
+        child: Text(
+          FruitTile.getDisplayText(widget.tile.value),
+          style: const TextStyle(
+            fontSize: 44,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                blurRadius: 8,
+                color: Colors.black26,
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
