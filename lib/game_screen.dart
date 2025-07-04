@@ -68,6 +68,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     if (moved) {
       final gameState = context.read<GameStateProvider>();
       // Kiểm tra game over và game won
+      _checkGameState();
+      
+      // Kiểm tra và hiển thị dialog tương ứng
       if (gameState.gameOver) {
         _showGameOverDialog();
       } else if (gameState.gameWon && !gameState.showFireworks) {
@@ -78,19 +81,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
   void _checkGameState() {
     final gameState = context.read<GameStateProvider>();
-    for (var row in gameState.board) {
-      for (var value in row) {
-        if (value == 2048 && !gameState.gameWon) {
-          gameState.gameWon = true;
-          _showWinDialog();
-          return;
-        }
-      }
-    }
-    if (!gameState.canMove()) {
-      gameState.gameOver = true;
-      _showGameOverDialog();
-    }
+    gameState.updateGameState();
   }
 
 

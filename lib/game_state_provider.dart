@@ -234,6 +234,7 @@ class GameStateProvider extends ChangeNotifier {
     }
     if (moved) {
       addNewTile();
+      updateGameState(); // Cập nhật trạng thái game sau khi thêm tile mới
       notifyListeners();
     }
     return moved;
@@ -292,6 +293,7 @@ class GameStateProvider extends ChangeNotifier {
     }
     if (moved) {
       addNewTile();
+      updateGameState(); // Cập nhật trạng thái game sau khi thêm tile mới
       notifyListeners();
     }
     return moved;
@@ -348,6 +350,7 @@ class GameStateProvider extends ChangeNotifier {
     }
     if (moved) {
       addNewTile();
+      updateGameState(); // Cập nhật trạng thái game sau khi thêm tile mới
       notifyListeners();
     }
     return moved;
@@ -404,6 +407,7 @@ class GameStateProvider extends ChangeNotifier {
     }
     if (moved) {
       addNewTile();
+      updateGameState(); // Cập nhật trạng thái game sau khi thêm tile mới
       notifyListeners();
     }
     return moved;
@@ -425,5 +429,25 @@ class GameStateProvider extends ChangeNotifier {
       }
     }
     return false;
+  }
+
+  // Cập nhật trạng thái game
+  void updateGameState() {
+    // Kiểm tra game won
+    for (var row in board) {
+      for (var value in row) {
+        if (value == 2048 && !gameWon) {
+          gameWon = true;
+          notifyListeners();
+          return;
+        }
+      }
+    }
+    
+    // Kiểm tra game over
+    if (!canMove() && !gameOver) {
+      gameOver = true;
+      notifyListeners();
+    }
   }
 } 
