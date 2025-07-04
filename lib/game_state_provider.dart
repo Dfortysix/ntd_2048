@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'game_board.dart';
 import 'game_state.dart';
 import 'ad_manager.dart';
@@ -32,6 +33,7 @@ class GameStateProvider extends ChangeNotifier {
     // Tự động khởi tạo 2 ô khởi điểm khi Provider được tạo
     addNewTile();
     addNewTile();
+    _loadBestScore(); // Load bestScore từ SharedPreferences
     notifyListeners(); // Đảm bảo UI được cập nhật
   }
 
@@ -151,6 +153,34 @@ class GameStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Lưu bestScore vào SharedPreferences
+  Future<void> _saveBestScore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('bestScore', bestScore);
+    } catch (e) {
+      // Error handling
+    }
+  }
+
+  // Cập nhật bestScore và lưu ngay lập tức
+  void _updateBestScore(int newScore) {
+    if (newScore > bestScore) {
+      bestScore = newScore;
+      _saveBestScore(); // Lưu ngay lập tức
+    }
+  }
+
+  // Load bestScore từ SharedPreferences
+  Future<void> _loadBestScore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      bestScore = prefs.getInt('bestScore') ?? 0;
+    } catch (e) {
+      // Error handling
+    }
+  }
+
   // Di chuyển sang trái
   bool moveLeft() {
     // Lưu trạng thái trước khi move
@@ -179,9 +209,7 @@ class GameStateProvider extends ChangeNotifier {
           newRowIds.add(nextTileId++);
           justMergedSet.add(i * gridSize + newRow.length - 1);
           score += nonZero[col];
-          if (score > bestScore) {
-            bestScore = score;
-          }
+          _updateBestScore(score);
           col += 2;
           moved = true;
         } else {
@@ -239,6 +267,7 @@ class GameStateProvider extends ChangeNotifier {
           newRowIds.add(nextTileId++);
           justMergedSet.add(i * gridSize + (gridSize - 1 - newRow.length + 1));
           score += nonZero[col];
+          _updateBestScore(score);
           col += 2;
           moved = true;
         } else {
@@ -294,6 +323,7 @@ class GameStateProvider extends ChangeNotifier {
           newColIds.add(nextTileId++);
           justMergedSet.add((newCol.length - 1) * gridSize + j);
           score += col[row];
+          _updateBestScore(score);
           row += 2;
           moved = true;
         } else {
@@ -349,6 +379,7 @@ class GameStateProvider extends ChangeNotifier {
           newColIds.add(nextTileId++);
           justMergedSet.add((gridSize - 1 - newCol.length + 1) * gridSize + j);
           score += col[row];
+          _updateBestScore(score);
           row += 2;
           moved = true;
         } else {

@@ -57,13 +57,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
   Future<void> _loadGame() async {
     prefs = await SharedPreferences.getInstance();
-    final gameState = context.read<GameStateProvider>();
-    gameState.bestScore = prefs.getInt('bestScore') ?? 0;
-  }
-
-  Future<void> _saveGame() async {
-    final gameState = context.read<GameStateProvider>();
-    await prefs.setInt('bestScore', gameState.bestScore);
   }
 
   void _performUndo() {
