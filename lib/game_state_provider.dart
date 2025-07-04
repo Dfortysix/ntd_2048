@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'game_board.dart';
 import 'game_state.dart';
+import 'ad_manager.dart';
 
 class GameStateProvider extends ChangeNotifier {
   static const int gridSize = 4;
@@ -25,7 +26,23 @@ class GameStateProvider extends ChangeNotifier {
   bool hasUsedFreeUndo = false;
 
   // Hiệu ứng pháo hoa
-  bool showFireworks = false;
+  bool _showFireworks = false;
+
+  GameStateProvider() {
+    // Tự động khởi tạo 2 ô khởi điểm khi Provider được tạo
+    print('🎮 GameStateProvider constructor called'); // Debug log
+    addNewTile();
+    addNewTile();
+    print('🎮 Initial tiles added: ${tiles.length}'); // Debug log
+    notifyListeners(); // Đảm bảo UI được cập nhật
+  }
+
+  set showFireworks(bool value) {
+    _showFireworks = value;
+    notifyListeners();
+  }
+  
+  bool get showFireworks => _showFireworks;
 
   List<Tile> get tiles => _buildTilesFromBoard(board, justMergedSet: justMergedSet);
 
@@ -45,10 +62,12 @@ class GameStateProvider extends ChangeNotifier {
         }
       }
     }
+    print('🎮 Built ${tiles.length} tiles from board'); // Debug log
     return tiles;
   }
 
   void resetGame() {
+    print('🔄 Reset game called'); // Debug log
     board = List.generate(gridSize, (_) => List.filled(gridSize, 0));
     score = 0;
     gameOver = false;
@@ -64,6 +83,12 @@ class GameStateProvider extends ChangeNotifier {
     hasUsedFreeUndo = false;
     showFireworks = false;
     notifyListeners();
+    
+    // Hiển thị quảng cáo khi reset game
+    if (AdManager.shouldShowAd()) {
+      AdManager.showInterstitialAd();
+    }
+    print('✅ Reset game completed'); // Debug log
   }
 
   void addNewTile() {
@@ -77,37 +102,74 @@ class GameStateProvider extends ChangeNotifier {
       final pos = empty[Random().nextInt(empty.length)];
       board[pos[0]][pos[1]] = Random().nextDouble() < 0.9 ? 2 : 4;
       tileIds[pos[0] * gridSize + pos[1]] = nextTileId++;
+      print('🎮 Added tile at [${pos[0]}, ${pos[1]}] with value ${board[pos[0]][pos[1]]}'); // Debug log
     }
   }
 
   void saveCurrentState() {
-    final currentState = GameState.fromCurrent(
-      board: board,
-      score: score,
-      gameOver: gameOver,
-      gameWon: gameWon,
-    );
-    gameHistory.add(currentState);
-    if (gameHistory.length > maxHistorySize) {
-      gameHistory.removeAt(0);
+    // Chỉ lưu nếu có lịch sử hoặc đây là lần đầu
+    if (gameHistory.isEmpty || gameHistory.last.score != score) {
+      // Lưu trạng thái trước khi merge (justMergedSet rỗng)
+      final currentState = GameState.fromCurrent(
+        board: board,
+        score: score,
+        gameOver: gameOver,
+        gameWon: gameWon,
+        justMergedSet: <int>{}, // Luôn rỗng khi lưu
+        tileIds: tileIds,
+        nextTileId: nextTileId,
+      );
+      gameHistory.add(currentState);
+      if (gameHistory.length > maxHistorySize) {
+        gameHistory.removeAt(0);
+      }
+      print('💾 Saved game state, history size: ${gameHistory.length}'); // Debug log
     }
   }
 
   void performUndo() {
+    print('🔄 performUndo called - freeUndoCount: $freeUndoCount, paidUndoCount: $paidUndoCount, gameHistory: ${gameHistory.length}'); // Debug log
     if (gameHistory.isNotEmpty) {
+      // Kiểm tra và sử dụng lượt undo
+      if (freeUndoCount > 0) {
+        freeUndoCount--;
+        hasUsedFreeUndo = true;
+        print('🔄 Used free undo, remaining: $freeUndoCount'); // Debug log
+      } else if (paidUndoCount > 0) {
+        paidUndoCount--;
+        print('🔄 Used paid undo, remaining: $paidUndoCount'); // Debug log
+      } else {
+        // Không có lượt undo nào
+        print('🔄 No undo counts available'); // Debug log
+        return;
+      }
+      
       final previousState = gameHistory.removeLast();
       board = previousState.boardCopy;
       score = previousState.score;
       gameOver = previousState.gameOver;
       gameWon = previousState.gameWon;
-      justMergedSet.clear();
+      justMergedSet.clear(); // Luôn clear khi undo
+      tileIds = Map<int, int>.from(previousState.tileIds);
+      nextTileId = previousState.nextTileId;
       showFireworks = false;
       notifyListeners();
+      print('🔄 Undo completed successfully'); // Debug log
+    } else {
+      print('🔄 No game history available'); // Debug log
     }
+  }
+
+  void addPaidUndo() {
+    paidUndoCount++;
+    notifyListeners();
   }
 
   // Di chuyển sang trái
   bool moveLeft() {
+    // Lưu trạng thái trước khi move
+    saveCurrentState();
+    
     bool moved = false;
     justMergedSet.clear();
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => tileIds[i * gridSize + j]));
@@ -131,6 +193,9 @@ class GameStateProvider extends ChangeNotifier {
           newRowIds.add(nextTileId++);
           justMergedSet.add(i * gridSize + newRow.length - 1);
           score += nonZero[col];
+          if (score > bestScore) {
+            bestScore = score;
+          }
           col += 2;
           moved = true;
         } else {
@@ -162,6 +227,9 @@ class GameStateProvider extends ChangeNotifier {
 
   // Di chuyển sang phải
   bool moveRight() {
+    // Lưu trạng thái trước khi move
+    saveCurrentState();
+    
     bool moved = false;
     justMergedSet.clear();
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => tileIds[i * gridSize + j]));
@@ -216,6 +284,9 @@ class GameStateProvider extends ChangeNotifier {
 
   // Di chuyển lên
   bool moveUp() {
+    // Lưu trạng thái trước khi move
+    saveCurrentState();
+    
     bool moved = false;
     justMergedSet.clear();
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => tileIds[i * gridSize + j]));
@@ -268,6 +339,9 @@ class GameStateProvider extends ChangeNotifier {
 
   // Di chuyển xuống
   bool moveDown() {
+    // Lưu trạng thái trước khi move
+    saveCurrentState();
+    
     bool moved = false;
     justMergedSet.clear();
     List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => tileIds[i * gridSize + j]));
@@ -316,5 +390,23 @@ class GameStateProvider extends ChangeNotifier {
       notifyListeners();
     }
     return moved;
+  }
+
+  // Kiểm tra có thể di chuyển được không
+  bool canMove() {
+    // Kiểm tra có ô trống không
+    for (var row in board) {
+      for (var value in row) {
+        if (value == 0) return true;
+      }
+    }
+    // Kiểm tra có thể merge không
+    for (int i = 0; i < gridSize; i++) {
+      for (int j = 0; j < gridSize; j++) {
+        if (i < gridSize - 1 && board[i][j] == board[i + 1][j]) return true;
+        if (j < gridSize - 1 && board[i][j] == board[i][j + 1]) return true;
+      }
+    }
+    return false;
   }
 } 

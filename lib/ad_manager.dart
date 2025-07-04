@@ -1,4 +1,5 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'remote_config_service.dart';
 
 class AdManager {
   static InterstitialAd? _interstitialAd;
@@ -10,8 +11,9 @@ class AdManager {
   
   // Tải quảng cáo xen kẽ
   static void loadInterstitialAd() {
+    final adUnitId = RemoteConfigService().getInterstitialAdUnitId();
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit ID
+      adUnitId: adUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
@@ -48,8 +50,9 @@ class AdManager {
 
   // Tải quảng cáo có tặng thưởng
   static void loadRewardedAd() {
+    final adUnitId = RemoteConfigService().getRewardedAdUnitId();
     RewardedAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/5224354917', // Test rewarded ad unit ID
+      adUnitId: adUnitId,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {

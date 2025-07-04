@@ -24,27 +24,7 @@ class Fruits2048Screen extends StatefulWidget {
 
 class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   static const int gridSize = 4;
-  List<List<int>> board = List.generate(gridSize, (_) => List.filled(gridSize, 0));
-  int score = 0;
-  int bestScore = 0;
-  bool gameOver = false;
-  bool gameWon = false;
-  bool isMoving = false;
   late SharedPreferences prefs;
-  Set<int> _justMergedSet = {};
-  
-  // Quản lý id duy nhất cho mỗi Tile
-  int _nextTileId = 0;
-  Map<int, int> _tileIds = {}; // key: i*gridSize+j, value: id
-  
-  // Lịch sử các bước đi để undo
-  List<GameState> _gameHistory = [];
-  static const int maxHistorySize = 10; // Giới hạn lịch sử
-  
-  // Quản lý lượt trợ giúp
-  int _freeUndoCount = 1; // 1 lượt miễn phí
-  int _paidUndoCount = 0; // Lượt mua bằng quảng cáo
-  bool _hasUsedFreeUndo = false; // Đã sử dụng lượt miễn phí chưa
   
   // Audio player cho nhạc nền
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -53,38 +33,15 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   // Audio player cho nhạc chiến thắng
   final AudioPlayer _winAudioPlayer = AudioPlayer();
   
-  // Hiệu ứng pháo hoa
-  bool _showFireworks = false;
-  
   // Quảng cáo xen kẽ được quản lý bởi AdManager
   
-  List<Tile> get tiles => _buildTilesFromBoard(board, justMergedSet: _justMergedSet);
-
-  List<Tile> _buildTilesFromBoard(List<List<int>> board, {Set<int>? justMergedSet}) {
-    final tiles = <Tile>[];
-    for (int i = 0; i < gridSize; i++) {
-      for (int j = 0; j < gridSize; j++) {
-        int key = i * gridSize + j;
-        if (board[i][j] != 0 && _tileIds.containsKey(key)) {
-          tiles.add(Tile(
-            id: _tileIds[key]!,
-            value: board[i][j],
-            row: i,
-            col: j,
-            justMerged: justMergedSet?.contains(key) ?? false,
-          ));
-        }
-      }
-    }
-    return tiles;
-  }
-
   @override
   void initState() {
     super.initState();
-    _loadGame();
-    _addNewTile();
-    _addNewTile();
+    // Đảm bảo Provider được khởi tạo trước khi load game
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadGame();
+    });
     _initBackgroundMusic();
     AdManager.loadInterstitialAd();
     AdManager.loadRewardedAd();
@@ -100,370 +57,64 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
   Future<void> _loadGame() async {
     prefs = await SharedPreferences.getInstance();
-    setState(() {
-      bestScore = prefs.getInt('bestScore') ?? 0;
-    });
+    final gameState = context.read<GameStateProvider>();
+    gameState.bestScore = prefs.getInt('bestScore') ?? 0;
   }
 
   Future<void> _saveGame() async {
-    await prefs.setInt('bestScore', bestScore);
-  }
-
-  void _saveCurrentState() {
-    final currentState = GameState.fromCurrent(
-      board: board,
-      score: score,
-      gameOver: gameOver,
-      gameWon: gameWon,
-    );
-    _gameHistory.add(currentState);
-    if (_gameHistory.length > maxHistorySize) {
-      _gameHistory.removeAt(0);
-    }
+    final gameState = context.read<GameStateProvider>();
+    await prefs.setInt('bestScore', gameState.bestScore);
   }
 
   void _performUndo() {
-    if (_gameHistory.isNotEmpty) {
-      final previousState = _gameHistory.removeLast();
-      setState(() {
-        board = previousState.boardCopy;
-        score = previousState.score;
-        gameOver = previousState.gameOver;
-        gameWon = previousState.gameWon;
-        _justMergedSet.clear();
-      });
-      if (_showFireworks) {
-        setState(() {
-          _showFireworks = false;
-        });
-      }
-    }
-  }
-
-  void _addNewTile() {
-    final empty = <List<int>>[];
-    for (int i = 0; i < gridSize; i++) {
-      for (int j = 0; j < gridSize; j++) {
-        if (board[i][j] == 0) empty.add([i, j]);
-      }
-    }
-    if (empty.isNotEmpty) {
-      final pos = empty[Random().nextInt(empty.length)];
-      board[pos[0]][pos[1]] = Random().nextDouble() < 0.9 ? 2 : 4;
-      _tileIds[pos[0] * gridSize + pos[1]] = _nextTileId++;
-    }
-  }
-
-  void _resetGame() {
-    setState(() {
-      board = List.generate(gridSize, (_) => List.filled(gridSize, 0));
-      score = 0;
-      gameOver = false;
-      gameWon = false;
-      _justMergedSet.clear();
-      _tileIds.clear();
-      _nextTileId = 0;
-    });
-    _addNewTile();
-    _addNewTile();
-    _gameHistory.clear();
-    _freeUndoCount = 1;
-    _paidUndoCount = 0;
-    _hasUsedFreeUndo = false;
-    if (AdManager.shouldShowAd()) {
-      AdManager.showInterstitialAd();
-    }
-  }
-
-  bool _moveLeft() {
-    bool moved = false;
-    _justMergedSet.clear();
-    // Lưu lại id cũ
-    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
-    for (int i = 0; i < gridSize; i++) {
-      List<int> row = board[i];
-      List<int?> rowIds = oldIds[i];
-      List<int> nonZero = [];
-      List<int?> nonZeroIds = [];
-      for (int j = 0; j < gridSize; j++) {
-        if (row[j] != 0) {
-          nonZero.add(row[j]);
-          nonZeroIds.add(rowIds[j]);
-        }
-      }
-      List<int> newRow = [];
-      List<int?> newRowIds = [];
-      int col = 0;
-      while (col < nonZero.length) {
-        if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
-          newRow.add(nonZero[col] * 2);
-          newRowIds.add(_nextTileId++); // id mới cho merge
-          _justMergedSet.add(i * gridSize + newRow.length - 1);
-          score += nonZero[col];
-          col += 2;
-          moved = true;
-        } else {
-          newRow.add(nonZero[col]);
-          newRowIds.add(nonZeroIds[col]);
-          col += 1;
-        }
-      }
-      while (newRow.length < gridSize) {
-        newRow.add(0);
-        newRowIds.add(null);
-      }
-      for (int j = 0; j < gridSize; j++) {
-        if (board[i][j] != newRow[j]) {
-          board[i][j] = newRow[j];
-          moved = true;
-        }
-        int key = i * gridSize + j;
-        if (newRow[j] != 0 && newRowIds[j] != null) {
-          _tileIds[key] = newRowIds[j]!;
-        } else if (newRow[j] != 0 && newRowIds[j] == null) {
-          _tileIds[key] = _nextTileId++;
-        } else {
-          _tileIds.remove(key);
-        }
-      }
-    }
-    return moved;
-  }
-
-  bool _moveRight() {
-    bool moved = false;
-    _justMergedSet.clear();
-    // Lưu lại id cũ
-    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
-    for (int i = 0; i < gridSize; i++) {
-      List<int> row = board[i];
-      List<int?> rowIds = oldIds[i];
-      List<int> nonZero = [];
-      List<int?> nonZeroIds = [];
-      for (int j = gridSize - 1; j >= 0; j--) {
-        if (row[j] != 0) {
-          nonZero.add(row[j]);
-          nonZeroIds.add(rowIds[j]);
-        }
-      }
-      List<int> newRow = [];
-      List<int?> newRowIds = [];
-      int col = 0;
-      while (col < nonZero.length) {
-        if (col + 1 < nonZero.length && nonZero[col] == nonZero[col + 1]) {
-          newRow.add(nonZero[col] * 2);
-          newRowIds.add(_nextTileId++); // id mới cho merge
-          _justMergedSet.add(i * gridSize + (gridSize - 1 - newRow.length + 1));
-          score += nonZero[col];
-          col += 2;
-          moved = true;
-        } else {
-          newRow.add(nonZero[col]);
-          newRowIds.add(nonZeroIds[col]);
-          col += 1;
-        }
-      }
-      while (newRow.length < gridSize) {
-        newRow.add(0);
-        newRowIds.add(null);
-      }
-      newRow = newRow.reversed.toList();
-      newRowIds = newRowIds.reversed.toList();
-      for (int j = 0; j < gridSize; j++) {
-        if (board[i][j] != newRow[j]) {
-          board[i][j] = newRow[j];
-          moved = true;
-        }
-        int key = i * gridSize + j;
-        if (newRow[j] != 0 && newRowIds[j] != null) {
-          _tileIds[key] = newRowIds[j]!;
-        } else if (newRow[j] != 0 && newRowIds[j] == null) {
-          _tileIds[key] = _nextTileId++;
-        } else {
-          _tileIds.remove(key);
-        }
-      }
-    }
-    return moved;
-  }
-
-  bool _moveUp() {
-    bool moved = false;
-    _justMergedSet.clear();
-    // Lưu lại id cũ
-    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
-    for (int j = 0; j < gridSize; j++) {
-      List<int> col = [];
-      List<int?> colIds = [];
-      for (int i = 0; i < gridSize; i++) {
-        if (board[i][j] != 0) {
-          col.add(board[i][j]);
-          colIds.add(oldIds[i][j]);
-        }
-      }
-      List<int> newCol = [];
-      List<int?> newColIds = [];
-      int row = 0;
-      while (row < col.length) {
-        if (row + 1 < col.length && col[row] == col[row + 1]) {
-          newCol.add(col[row] * 2);
-          newColIds.add(_nextTileId++); // id mới cho merge
-          _justMergedSet.add((newCol.length - 1) * gridSize + j);
-          score += col[row];
-          row += 2;
-          moved = true;
-        } else {
-          newCol.add(col[row]);
-          newColIds.add(colIds[row]);
-          row += 1;
-        }
-      }
-      while (newCol.length < gridSize) {
-        newCol.add(0);
-        newColIds.add(null);
-      }
-      for (int i = 0; i < gridSize; i++) {
-        if (board[i][j] != newCol[i]) {
-          board[i][j] = newCol[i];
-          moved = true;
-        }
-        int key = i * gridSize + j;
-        if (newCol[i] != 0 && newColIds[i] != null) {
-          _tileIds[key] = newColIds[i]!;
-        } else if (newCol[i] != 0 && newColIds[i] == null) {
-          _tileIds[key] = _nextTileId++;
-        } else {
-          _tileIds.remove(key);
-        }
-      }
-    }
-    return moved;
-  }
-
-  bool _moveDown() {
-    bool moved = false;
-    _justMergedSet.clear();
-    // Lưu lại id cũ
-    List<List<int?>> oldIds = List.generate(gridSize, (i) => List.generate(gridSize, (j) => _tileIds[i * gridSize + j]));
-    for (int j = 0; j < gridSize; j++) {
-      List<int> col = [];
-      List<int?> colIds = [];
-      for (int i = gridSize - 1; i >= 0; i--) {
-        if (board[i][j] != 0) {
-          col.add(board[i][j]);
-          colIds.add(oldIds[i][j]);
-        }
-      }
-      List<int> newCol = [];
-      List<int?> newColIds = [];
-      int row = 0;
-      while (row < col.length) {
-        if (row + 1 < col.length && col[row] == col[row + 1]) {
-          newCol.add(col[row] * 2);
-          newColIds.add(_nextTileId++); // id mới cho merge
-          _justMergedSet.add((gridSize - 1 - newCol.length + 1) * gridSize + j);
-          score += col[row];
-          row += 2;
-          moved = true;
-        } else {
-          newCol.add(col[row]);
-          newColIds.add(colIds[row]);
-          row += 1;
-        }
-      }
-      while (newCol.length < gridSize) {
-        newCol.add(0);
-        newColIds.add(null);
-      }
-      newCol = newCol.reversed.toList();
-      newColIds = newColIds.reversed.toList();
-      for (int i = 0; i < gridSize; i++) {
-        if (board[i][j] != newCol[i]) {
-          board[i][j] = newCol[i];
-          moved = true;
-        }
-        int key = i * gridSize + j;
-        if (newCol[i] != 0 && newColIds[i] != null) {
-          _tileIds[key] = newColIds[i]!;
-        } else if (newCol[i] != 0 && newColIds[i] == null) {
-          _tileIds[key] = _nextTileId++;
-        } else {
-          _tileIds.remove(key);
-        }
-      }
-    }
-    return moved;
+    print('🎯 _performUndo called from UI'); // Debug log
+    final gameState = context.read<GameStateProvider>();
+    gameState.performUndo();
   }
 
   void _handleMove(bool moved) {
-    if (isMoving || !mounted) return;
     if (moved) {
-      _saveCurrentState();
-      setState(() {
-        _addNewTile();
-        if (score > bestScore) {
-          bestScore = score;
-          _saveGame();
-        }
-      });
-      _checkGameState();
-      isMoving = true;
-      Future.delayed(const Duration(milliseconds: 180), () {
-        setState(() {
-          _justMergedSet.clear();
-        });
-        isMoving = false;
-      });
+      final gameState = context.read<GameStateProvider>();
+      // Kiểm tra game over và game won
+      if (gameState.gameOver) {
+        _showGameOverDialog();
+      } else if (gameState.gameWon && !gameState.showFireworks) {
+        _showWinDialog();
+      }
     }
   }
 
   void _checkGameState() {
-    for (var row in board) {
+    final gameState = context.read<GameStateProvider>();
+    for (var row in gameState.board) {
       for (var value in row) {
-        if (value == 2048 && !gameWon) {
-          setState(() => gameWon = true);
+        if (value == 2048 && !gameState.gameWon) {
+          gameState.gameWon = true;
           _showWinDialog();
           return;
         }
       }
     }
-    if (!_canMove()) {
-      setState(() => gameOver = true);
+    if (!gameState.canMove()) {
+      gameState.gameOver = true;
       _showGameOverDialog();
     }
   }
 
-  bool _canMove() {
-    for (var row in board) {
-      for (var value in row) {
-        if (value == 0) return true;
-      }
-    }
-    for (int i = 0; i < gridSize; i++) {
-      for (int j = 0; j < gridSize; j++) {
-        if (i < gridSize - 1 && board[i][j] == board[i + 1][j]) return true;
-        if (j < gridSize - 1 && board[i][j] == board[i][j + 1]) return true;
-      }
-    }
-    return false;
-  }
+
 
   void _showWinDialog() {
     print('🎆 Starting win sequence...'); // Debug
     _stopBackgroundMusic(); // Dừng nhạc nền khi thắng
     _playWinSound(); // Phát nhạc chiến thắng
-    setState(() {
-      _showFireworks = true; // Hiển thị pháo hoa
-      print('🎆 Fireworks set to true'); // Debug
-    });
+    context.read<GameStateProvider>().showFireworks = true; // Hiển thị pháo hoa
+    print('🎆 Fireworks set to true'); // Debug
     
     // Tự động tắt pháo hoa sau 3 giây
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        setState(() {
-          _showFireworks = false;
-          print('🎆 Fireworks auto-hidden after 3 seconds'); // Debug
-        });
+        context.read<GameStateProvider>().showFireworks = false;
+        print('🎆 Fireworks auto-hidden after 3 seconds'); // Debug
       }
     });
   }
@@ -474,16 +125,19 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     // Hiển thị quảng cáo xen kẽ khi game over
     AdManager.showAdOnGameOver();
     
+    final gameState = context.read<GameStateProvider>();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('🍂 Hết trái cây rồi!'),
-        content: Text('Bạn đã thu thập được $score trái cây! 🍎'),
+        content: Text('Bạn đã thu thập được ${gameState.score} trái cây! 🍎'),
         actions: [
           TextButton(
             onPressed: () {
+              print('🎯 Dialog restart button pressed'); // Debug log
               Navigator.pop(context);
-              _resetGame();
+              context.read<GameStateProvider>().resetGame();
+              print('🎯 Dialog restart completed'); // Debug log
             },
             child: const Text('Chơi lại'),
           ),
@@ -495,6 +149,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   @override
   Widget build(BuildContext context) {
     final gameState = context.watch<GameStateProvider>();
+    print('🎮 Build - freeUndoCount: ${gameState.freeUndoCount}, paidUndoCount: ${gameState.paidUndoCount}, gameHistory: ${gameState.gameHistory.length}'); // Debug log
     return Scaffold(
       backgroundColor: Colors.transparent, // Để gradient hiển thị
       appBar: AppBar(
@@ -507,19 +162,26 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
             icon: Icon(_isMusicPlaying ? Icons.music_note : Icons.music_off),
           ),
           // Nút Undo hoặc xem quảng cáo
-          if (_freeUndoCount > 0 || _paidUndoCount > 0)
+          if (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
             IconButton(
-              onPressed: _gameHistory.isNotEmpty ? _performUndo : null,
+              onPressed: gameState.gameHistory.isNotEmpty ? _performUndo : null,
               icon: const Icon(Icons.undo),
-              tooltip: 'Quay lại nước đi trước (${_freeUndoCount + _paidUndoCount} lượt còn lại)',
+              tooltip: 'Quay lại nước đi trước (${gameState.freeUndoCount + gameState.paidUndoCount} lượt còn lại)',
             )
           else
             IconButton(
-              onPressed: _gameHistory.isNotEmpty ? _showBuyUndoDialog : null,
+              onPressed: gameState.gameHistory.isNotEmpty ? _showBuyUndoDialog : null,
               icon: const Icon(Icons.play_circle_outline),
               tooltip: 'Xem quảng cáo để nhận lượt trợ giúp',
             ),
-          IconButton(onPressed: () => gameState.resetGame(), icon: const Icon(Icons.refresh)),
+          IconButton(
+            onPressed: () {
+              print('🎯 Restart button pressed'); // Debug log
+              gameState.resetGame();
+              print('🎯 Restart button action completed'); // Debug log
+            }, 
+            icon: const Icon(Icons.refresh)
+          ),
         ],
       ),
       body: Stack(
@@ -601,24 +263,24 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onHorizontalDragEnd: (details) {
-                        if (gameOver || isMoving) return;
+                        if (gameState.gameOver || gameState.isMoving) return;
                         double velocity = details.velocity.pixelsPerSecond.dx;
                         if (velocity.abs() > 300) {
                           if (velocity > 0) {
-                            _handleMove(_moveRight());
+                            _handleMove(gameState.moveRight());
                           } else {
-                            _handleMove(_moveLeft());
+                            _handleMove(gameState.moveLeft());
                           }
                         }
                       },
                       onVerticalDragEnd: (details) {
-                        if (gameOver || isMoving) return;
+                        if (gameState.gameOver || gameState.isMoving) return;
                         double velocity = details.velocity.pixelsPerSecond.dy;
                         if (velocity.abs() > 300) {
                           if (velocity > 0) {
-                            _handleMove(_moveDown());
+                            _handleMove(gameState.moveDown());
                           } else {
-                            _handleMove(_moveUp());
+                            _handleMove(gameState.moveUp());
                           }
                         }
                       },
@@ -630,12 +292,12 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  ScoreBox('Điểm', score),
-                                  ScoreBox('Cao nhất', bestScore),
+                                  ScoreBox('Điểm', gameState.score),
+                                  ScoreBox('Cao nhất', gameState.bestScore),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     decoration: BoxDecoration(
-                                      color: _freeUndoCount > 0 || _paidUndoCount > 0 
+                                      color: gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
                                           ? const Color(0xFF4CAF50) 
                                           : const Color(0xFFFF9800),
                                       borderRadius: BorderRadius.circular(8),
@@ -644,7 +306,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
-                                          _freeUndoCount > 0 || _paidUndoCount > 0 
+                                          gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
                                               ? Icons.undo 
                                               : Icons.play_circle_outline,
                                           color: Colors.white, 
@@ -652,8 +314,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          _freeUndoCount > 0 || _paidUndoCount > 0 
-                                              ? '${_freeUndoCount + _paidUndoCount}'
+                                          gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
+                                              ? '${gameState.freeUndoCount + gameState.paidUndoCount}'
                                               : '0',
                                           style: const TextStyle(
                                             color: Colors.white,
@@ -671,7 +333,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if (_freeUndoCount > 0)
+                                  if (gameState.freeUndoCount > 0)
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
@@ -679,7 +341,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(
-                                        'Miễn phí: $_freeUndoCount',
+                                        'Miễn phí: ${gameState.freeUndoCount}',
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,
@@ -687,9 +349,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                         ),
                                       ),
                                     ),
-                                  if (_freeUndoCount > 0 && _paidUndoCount > 0)
+                                  if (gameState.freeUndoCount > 0 && gameState.paidUndoCount > 0)
                                     const SizedBox(width: 8),
-                                  if (_paidUndoCount > 0)
+                                  if (gameState.paidUndoCount > 0)
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
@@ -697,7 +359,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(
-                                        'Quảng cáo: $_paidUndoCount',
+                                        'Quảng cáo: ${gameState.paidUndoCount}',
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,
@@ -713,7 +375,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                           Expanded(
                             child: Center(
                               child: GameBoard(
-                                tiles: tiles,
+                                tiles: gameState.tiles,
                                 getTileColor: _getTileColor,
                               ),
                             ),
@@ -728,13 +390,11 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                       ),
                     ),
                     // Hiệu ứng pháo hoa
-                    if (_showFireworks)
+                    if (gameState.showFireworks)
                       FireworksEffect(
                         onComplete: () {
                           print('🎆 Fireworks effect completed'); // Debug
-                          setState(() {
-                            _showFireworks = false;
-                          });
+                          context.read<GameStateProvider>().showFireworks = false;
                         },
                       ),
                   ],
@@ -904,12 +564,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   // Xem quảng cáo để nhận lượt trợ giúp
   void _watchAdForUndo() {
     AdManager.showRewardedAd(() {
-      // Callback khi xem xong quảng cáo
-      setState(() {
-        _paidUndoCount++;
-      });
-      
-      // Hiển thị thông báo thành công
+      context.read<GameStateProvider>().addPaidUndo();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('🎉 Bạn đã nhận thêm 1 lượt trợ giúp!'),
