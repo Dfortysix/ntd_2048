@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'remote_config_service.dart';
 
 class BannerAdWidget extends StatefulWidget {
   const BannerAdWidget({super.key});
@@ -19,19 +20,18 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   }
 
   void _loadBannerAd() {
+    final adUnitId = RemoteConfigService().getBannerAdUnitId();
     _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/9214589741', // Test banner ad unit ID
+      adUnitId: adUnitId,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          print('Quảng cáo biểu ngữ đã tải thành công');
           setState(() {
             _isLoaded = true;
           });
         },
         onAdFailedToLoad: (ad, error) {
-          print('Quảng cáo biểu ngữ tải thất bại: $error');
           ad.dispose();
           setState(() {
             _isLoaded = false;

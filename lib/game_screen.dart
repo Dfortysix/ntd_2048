@@ -67,7 +67,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   }
 
   void _performUndo() {
-    print('🎯 _performUndo called from UI'); // Debug log
     final gameState = context.read<GameStateProvider>();
     gameState.performUndo();
   }
@@ -104,17 +103,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
 
 
   void _showWinDialog() {
-    print('🎆 Starting win sequence...'); // Debug
     _stopBackgroundMusic(); // Dừng nhạc nền khi thắng
     _playWinSound(); // Phát nhạc chiến thắng
     context.read<GameStateProvider>().showFireworks = true; // Hiển thị pháo hoa
-    print('🎆 Fireworks set to true'); // Debug
     
     // Tự động tắt pháo hoa sau 3 giây
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         context.read<GameStateProvider>().showFireworks = false;
-        print('🎆 Fireworks auto-hidden after 3 seconds'); // Debug
       }
     });
   }
@@ -134,10 +130,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         actions: [
           TextButton(
             onPressed: () {
-              print('🎯 Dialog restart button pressed'); // Debug log
               Navigator.pop(context);
               context.read<GameStateProvider>().resetGame();
-              print('🎯 Dialog restart completed'); // Debug log
             },
             child: const Text('Chơi lại'),
           ),
@@ -149,7 +143,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   @override
   Widget build(BuildContext context) {
     final gameState = context.watch<GameStateProvider>();
-    print('🎮 Build - freeUndoCount: ${gameState.freeUndoCount}, paidUndoCount: ${gameState.paidUndoCount}, gameHistory: ${gameState.gameHistory.length}'); // Debug log
     return Scaffold(
       backgroundColor: Colors.transparent, // Để gradient hiển thị
       appBar: AppBar(
@@ -176,9 +169,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
             ),
           IconButton(
             onPressed: () {
-              print('🎯 Restart button pressed'); // Debug log
               gameState.resetGame();
-              print('🎯 Restart button action completed'); // Debug log
             }, 
             icon: const Icon(Icons.refresh)
           ),
@@ -393,7 +384,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                     if (gameState.showFireworks)
                       FireworksEffect(
                         onComplete: () {
-                          print('🎆 Fireworks effect completed'); // Debug
                           context.read<GameStateProvider>().showFireworks = false;
                         },
                       ),
@@ -449,7 +439,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       await _audioPlayer.setVolume(0.3);
       await _playBackgroundMusic();
     } catch (e) {
-      print('Error initializing background music: $e');
+      // Error handling
     }
   }
 
@@ -460,7 +450,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         _isMusicPlaying = true;
       });
     } catch (e) {
-      print('Error playing background music: $e');
+      // Error handling
     }
   }
 
@@ -471,7 +461,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         _isMusicPlaying = false;
       });
     } catch (e) {
-      print('Error stopping background music: $e');
+      // Error handling
     }
   }
 
@@ -492,7 +482,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       await _winAudioPlayer.setVolume(0.7);
       await _winAudioPlayer.play();
     } catch (e) {
-      print('Error playing win sound: $e');
+      // Error handling
     }
   }
 

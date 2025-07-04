@@ -30,10 +30,8 @@ class GameStateProvider extends ChangeNotifier {
 
   GameStateProvider() {
     // Tự động khởi tạo 2 ô khởi điểm khi Provider được tạo
-    print('🎮 GameStateProvider constructor called'); // Debug log
     addNewTile();
     addNewTile();
-    print('🎮 Initial tiles added: ${tiles.length}'); // Debug log
     notifyListeners(); // Đảm bảo UI được cập nhật
   }
 
@@ -62,12 +60,10 @@ class GameStateProvider extends ChangeNotifier {
         }
       }
     }
-    print('🎮 Built ${tiles.length} tiles from board'); // Debug log
     return tiles;
   }
 
   void resetGame() {
-    print('🔄 Reset game called'); // Debug log
     board = List.generate(gridSize, (_) => List.filled(gridSize, 0));
     score = 0;
     gameOver = false;
@@ -88,7 +84,6 @@ class GameStateProvider extends ChangeNotifier {
     if (AdManager.shouldShowAd()) {
       AdManager.showInterstitialAd();
     }
-    print('✅ Reset game completed'); // Debug log
   }
 
   void addNewTile() {
@@ -102,7 +97,6 @@ class GameStateProvider extends ChangeNotifier {
       final pos = empty[Random().nextInt(empty.length)];
       board[pos[0]][pos[1]] = Random().nextDouble() < 0.9 ? 2 : 4;
       tileIds[pos[0] * gridSize + pos[1]] = nextTileId++;
-      print('🎮 Added tile at [${pos[0]}, ${pos[1]}] with value ${board[pos[0]][pos[1]]}'); // Debug log
     }
   }
 
@@ -123,24 +117,19 @@ class GameStateProvider extends ChangeNotifier {
       if (gameHistory.length > maxHistorySize) {
         gameHistory.removeAt(0);
       }
-      print('💾 Saved game state, history size: ${gameHistory.length}'); // Debug log
     }
   }
 
   void performUndo() {
-    print('🔄 performUndo called - freeUndoCount: $freeUndoCount, paidUndoCount: $paidUndoCount, gameHistory: ${gameHistory.length}'); // Debug log
     if (gameHistory.isNotEmpty) {
       // Kiểm tra và sử dụng lượt undo
       if (freeUndoCount > 0) {
         freeUndoCount--;
         hasUsedFreeUndo = true;
-        print('🔄 Used free undo, remaining: $freeUndoCount'); // Debug log
       } else if (paidUndoCount > 0) {
         paidUndoCount--;
-        print('🔄 Used paid undo, remaining: $paidUndoCount'); // Debug log
       } else {
         // Không có lượt undo nào
-        print('🔄 No undo counts available'); // Debug log
         return;
       }
       
@@ -154,9 +143,6 @@ class GameStateProvider extends ChangeNotifier {
       nextTileId = previousState.nextTileId;
       showFireworks = false;
       notifyListeners();
-      print('🔄 Undo completed successfully'); // Debug log
-    } else {
-      print('🔄 No game history available'); // Debug log
     }
   }
 

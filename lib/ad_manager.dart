@@ -18,10 +18,8 @@ class AdManager {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitialAd = ad;
-          print('Quảng cáo xen kẽ đã tải thành công');
         },
         onAdFailedToLoad: (error) {
-          print('Quảng cáo xen kẽ tải thất bại: $error');
         },
       ),
     );
@@ -57,10 +55,8 @@ class AdManager {
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;
-          print('Quảng cáo có tặng thưởng đã tải thành công');
         },
         onAdFailedToLoad: (error) {
-          print('Quảng cáo có tặng thưởng tải thất bại: $error');
         },
       ),
     );
@@ -79,7 +75,6 @@ class AdManager {
           loadRewardedAd();
         },
         onAdFailedToShowFullScreenContent: (ad, error) {
-          print('Quảng cáo có tặng thưởng hiển thị thất bại: $error');
           ad.dispose();
           _rewardedAd = null;
           loadRewardedAd();
@@ -88,7 +83,6 @@ class AdManager {
       
       _rewardedAd!.show(
         onUserEarnedReward: (ad, reward) {
-          print('Người dùng nhận được phần thưởng: ${reward.amount} ${reward.type}');
           if (_onRewardedAdCompleted != null) {
             _onRewardedAdCompleted!();
             _onRewardedAdCompleted = null;
@@ -96,7 +90,6 @@ class AdManager {
         },
       );
     } else {
-      print('Quảng cáo có tặng thưởng chưa sẵn sàng');
     }
   }
 
