@@ -13,9 +13,10 @@ class RemoteConfigService {
       minimumFetchInterval: const Duration(minutes: 30),
     ));
     await _remoteConfig.setDefaults(<String, dynamic>{
-      'banner_ad_unit_id': 'ca-app-pub-3940256099942544/6300978111',
-      'interstitial_ad_unit_id': 'ca-app-pub-3940256099942544/1033173712',
-      'rewarded_ad_unit_id': 'ca-app-pub-3940256099942544/5224354917',
+      // Test Ad Unit IDs - Thay thế bằng Ad Unit ID thật từ AdMob
+      'banner_ad_unit_id': 'ca-app-pub-7525945859229479/1333572394',
+      'interstitial_ad_unit_id': 'ca-app-pub-7525945859229479/3201419345',
+      'rewarded_ad_unit_id': 'ca-app-pub-7525945859229479/5780099776',
     });
     
     try {
