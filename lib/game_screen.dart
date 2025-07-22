@@ -33,6 +33,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   // Audio player cho nhạc chiến thắng
   final AudioPlayer _winAudioPlayer = AudioPlayer();
   
+  // Audio player cho nhạc merge
+  final AudioPlayer _mergeAudioPlayer = AudioPlayer();
+  
   // Quảng cáo xen kẽ được quản lý bởi AdManager
   
   @override
@@ -51,6 +54,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   void dispose() {
     _audioPlayer.dispose();
     _winAudioPlayer.dispose();
+    _mergeAudioPlayer.dispose();
     AdManager.dispose();
     super.dispose();
   }
@@ -67,6 +71,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   void _handleMove(bool moved) {
     if (moved) {
       final gameState = context.read<GameStateProvider>();
+      if (gameState.justMergedSet.isNotEmpty) {
+        _playMergeSound();
+      }
       // Kiểm tra game over và game won
       _checkGameState();
       
@@ -469,6 +476,17 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       await _winAudioPlayer.setAsset('assets/sounds/win.mp3');
       await _winAudioPlayer.setVolume(0.7);
       await _winAudioPlayer.play();
+    } catch (e) {
+      // Error handling
+    }
+  }
+
+  Future<void> _playMergeSound() async {
+    if (!_isMusicPlaying) return;
+    try {
+      await _mergeAudioPlayer.setAsset('assets/sounds/merge.wav');
+      await _mergeAudioPlayer.setVolume(0.7);
+      await _mergeAudioPlayer.play();
     } catch (e) {
       // Error handling
     }
