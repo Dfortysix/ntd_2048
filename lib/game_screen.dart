@@ -417,14 +417,18 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   }
 
   Future<void> _initBackgroundMusic() async {
-    try {
-      await _audioPlayer.setAsset('assets/sounds/theme.mp3');
-      await _audioPlayer.setLoopMode(LoopMode.all);
-      await _audioPlayer.setVolume(0.3);
-      await _playBackgroundMusic();
-    } catch (e) {
-      // Error handling
+    prefs = await SharedPreferences.getInstance();
+    bool? isMusicOn = prefs.getBool('isMusicOn');
+    _isMusicPlaying = isMusicOn ?? true; // Mặc định là bật nhạc nếu chưa có dữ liệu
+
+    await _audioPlayer.setAsset('assets/sounds/theme.mp3');
+    await _audioPlayer.setLoopMode(LoopMode.all);
+    await _audioPlayer.setVolume(0.3);
+
+    if (_isMusicPlaying) {
+      await _audioPlayer.play();
     }
+    setState(() {}); // Cập nhật UI
   }
 
   Future<void> _playBackgroundMusic() async {
@@ -450,9 +454,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   }
 
   Future<void> _toggleBackgroundMusic() async {
-    setState(() {
-      _isMusicPlaying = !_isMusicPlaying;
-    });
+    _isMusicPlaying = !_isMusicPlaying;
+    await prefs.setBool('isMusicOn', _isMusicPlaying);
+    setState(() {});
     if (_isMusicPlaying) {
       await _playBackgroundMusic();
     } else {
