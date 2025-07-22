@@ -30,6 +30,7 @@ flutter:
   assets:
     - assets/sounds/theme.mp3
     - assets/sounds/win.mp3
+    - assets/sounds/merge.wav
   
 flutter_icons:
   android: true
