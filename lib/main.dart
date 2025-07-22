@@ -5,9 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'game_screen.dart';
 import 'game_state_provider.dart';
 import 'remote_config_service.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await Firebase.initializeApp();
   await MobileAds.instance.initialize();
   await RemoteConfigService().init();
