@@ -109,9 +109,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   void _showGameOverDialog() {
     _stopBackgroundMusic();
     
-    // Hiển thị quảng cáo xen kẽ khi game over
-    AdManager.showAdOnGameOver();
-    
     final gameState = context.read<GameStateProvider>();
     showDialog(
       context: context,
