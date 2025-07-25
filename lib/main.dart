@@ -39,6 +39,12 @@ class Fruits2048App extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const Fruits2048Screen(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      },
     );
   }
 }
