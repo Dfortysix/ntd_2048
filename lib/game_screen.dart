@@ -142,32 +142,11 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
             onPressed: _toggleBackgroundMusic,
             icon: Icon(_isMusicPlaying ? Icons.music_note : Icons.music_off),
           ),
-          // Nút Undo hoặc xem quảng cáo
-          if (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
-            IconButton(
-              onPressed: gameState.gameHistory.isNotEmpty ? _performUndo : null,
-              icon: const Icon(Icons.undo),
-              tooltip: 'Quay lại nước đi trước (${gameState.freeUndoCount + gameState.paidUndoCount} lượt còn lại)',
-            )
-          else
-            IconButton(
-              onPressed: gameState.gameHistory.isNotEmpty ? _showBuyUndoDialog : null,
-              icon: const Icon(Icons.play_circle_outline),
-              tooltip: 'Xem quảng cáo để nhận lượt trợ giúp',
-            ),
-          // Nút trợ giúp xóa tất cả ô cherry
-          IconButton(
-            onPressed: () {
-              context.read<GameStateProvider>().removeAllCherryTiles();
-            },
-            icon: const Icon(Icons.delete_sweep),
-            tooltip: 'Xóa tất cả ô Cherry (2)',
-          ),
           IconButton(
             onPressed: () {
               gameState.resetGame();
-            }, 
-            icon: const Icon(Icons.refresh)
+            },
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
@@ -281,79 +260,50 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                 children: [
                                   ScoreBox('Điểm', gameState.score),
                                   ScoreBox('Cao nhất', gameState.bestScore),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
-                                          ? const Color(0xFF4CAF50) 
-                                          : const Color(0xFFFF9800),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
-                                              ? Icons.undo 
+                                  // Nhóm trợ giúp (undo/quảng cáo + xóa cherry)
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        onPressed: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
+                                            ? (gameState.gameHistory.isNotEmpty ? _performUndo : null)
+                                            : (gameState.gameHistory.isNotEmpty ? _showBuyUndoDialog : null),
+                                        icon: Icon(
+                                          (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
+                                              ? Icons.undo
                                               : Icons.play_circle_outline,
-                                          color: Colors.white, 
-                                          size: 16
+                                          color: _helpIconColor(gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0),
                                         ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0 
-                                              ? '${gameState.freeUndoCount + gameState.paidUndoCount}'
-                                              : '0',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
+                                        tooltip: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
+                                            ? 'Quay lại nước đi trước (${gameState.freeUndoCount + gameState.paidUndoCount} lượt còn lại)'
+                                            : 'Xem quảng cáo để nhận lượt trợ giúp',
+                                        splashColor: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
+                                            ? null
+                                            : Colors.orangeAccent,
+                                        highlightColor: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
+                                            ? null
+                                            : Colors.orange.withOpacity(0.2),
+                                      ),
+                                      IconButton(
+                                        onPressed: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
+                                            ? () {
+                                                context.read<GameStateProvider>().removeAllCherryTiles();
+                                              }
+                                            : null,
+                                        icon: Icon(
+                                          Icons.delete_sweep,
+                                          color: _cherryHelpIconColor(context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)),
                                         ),
-                                      ],
-                                    ),
+                                        tooltip: 'Xóa tất cả ô Cherry (2)',
+                                        splashColor: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
+                                            ? null
+                                            : Colors.orangeAccent,
+                                        highlightColor: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
+                                            ? null
+                                            : Colors.orange.withOpacity(0.2),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Hiển thị chi tiết lượt trợ giúp
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (gameState.freeUndoCount > 0)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF8BC34A),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        'Miễn phí: ${gameState.freeUndoCount}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  if (gameState.freeUndoCount > 0 && gameState.paidUndoCount > 0)
-                                    const SizedBox(width: 8),
-                                  if (gameState.paidUndoCount > 0)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFF9800),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        'Quảng cáo: ${gameState.paidUndoCount}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
                                 ],
                               ),
                             ],
@@ -426,6 +376,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       default:
         return const Color(0xFFC8E6C9); // Màu xanh lá cây nhạt cho ô trống
     }
+  }
+
+  Color _helpIconColor(bool hasHelp) {
+    return hasHelp ? Colors.white : Colors.orange;
+  }
+
+  Color _cherryHelpIconColor(bool hasCherry) {
+    return hasCherry ? Colors.white : Colors.orange;
   }
 
   Future<void> _initBackgroundMusic() async {
