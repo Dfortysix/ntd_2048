@@ -107,7 +107,6 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   }
 
   void _showGameOverDialog() {
-    _stopBackgroundMusic();
     
     final gameState = context.read<GameStateProvider>();
     showDialog(
