@@ -450,4 +450,21 @@ class GameStateProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Trợ giúp: Xóa tất cả ô có giá trị 2 (cherry)
+  void removeAllCherryTiles() {
+    bool removed = false;
+    for (int i = 0; i < gridSize; i++) {
+      for (int j = 0; j < gridSize; j++) {
+        if (board[i][j] == 2) {
+          board[i][j] = 0;
+          tileIds.remove(i * gridSize + j);
+          removed = true;
+        }
+      }
+    }
+    if (removed) {
+      notifyListeners();
+    }
+  }
 } 

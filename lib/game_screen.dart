@@ -155,6 +155,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
               icon: const Icon(Icons.play_circle_outline),
               tooltip: 'Xem quảng cáo để nhận lượt trợ giúp',
             ),
+          // Nút trợ giúp xóa tất cả ô cherry
+          IconButton(
+            onPressed: () {
+              context.read<GameStateProvider>().removeAllCherryTiles();
+            },
+            icon: const Icon(Icons.delete_sweep),
+            tooltip: 'Xóa tất cả ô Cherry (2)',
+          ),
           IconButton(
             onPressed: () {
               gameState.resetGame();
