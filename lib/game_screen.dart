@@ -284,20 +284,23 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                             : Colors.orange.withOpacity(0.2),
                                       ),
                                       IconButton(
-                                        onPressed: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
-                                            ? () {
-                                                context.read<GameStateProvider>().removeAllCherryTiles();
-                                              }
-                                            : null,
+                                        onPressed: () {
+                                          final provider = context.read<GameStateProvider>();
+                                          if (provider.cherryHelpCount > 0) {
+                                            provider.useCherryHelp();
+                                          } else {
+                                            _showBuyCherryHelpDialog();
+                                          }
+                                        },
                                         icon: Icon(
                                           Icons.delete_sweep,
-                                          color: _cherryHelpIconColor(context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)),
+                                          color: _cherryHelpIconColor(context.read<GameStateProvider>().cherryHelpCount > 0),
                                         ),
                                         tooltip: 'Xóa tất cả ô Cherry (2)',
-                                        splashColor: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
+                                        splashColor: context.read<GameStateProvider>().cherryHelpCount > 0
                                             ? null
                                             : Colors.orangeAccent,
-                                        highlightColor: context.read<GameStateProvider>().tiles.any((tile) => tile.value == 2)
+                                        highlightColor: context.read<GameStateProvider>().cherryHelpCount > 0
                                             ? null
                                             : Colors.orange.withOpacity(0.2),
                                       ),
@@ -526,6 +529,84 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('🎉 Bạn đã nhận thêm 1 lượt trợ giúp!'),
+          backgroundColor: Color(0xFF4CAF50),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    });
+  }
+
+  // Hiển thị dialog mua thêm lượt xóa cherry (giống undo)
+  void _showBuyCherryHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('🔄 Thêm lượt xóa Cherry'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Bạn đã hết lượt xóa Cherry!'),
+            const SizedBox(height: 8),
+            const Text('• Xem quảng cáo để nhận thêm 1 lượt xóa Cherry'),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: const Color(0xFFFF9800)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Color(0xFFFF9800), size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Quảng cáo sẽ hiển thị trong 15-30 giây',
+                      style: TextStyle(fontSize: 12, color: Color(0xFFFF9800)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _watchAdForCherryHelp();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.play_circle_outline, size: 16),
+                SizedBox(width: 4),
+                Text('Xem quảng cáo'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Xem quảng cáo để nhận lượt xóa cherry
+  void _watchAdForCherryHelp() {
+    AdManager.showRewardedAd(() {
+      context.read<GameStateProvider>().addCherryHelp();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🎉 Bạn đã nhận thêm 1 lượt xóa Cherry!'),
           backgroundColor: Color(0xFF4CAF50),
           duration: Duration(seconds: 2),
         ),

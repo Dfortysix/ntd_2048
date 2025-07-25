@@ -29,6 +29,8 @@ class GameStateProvider extends ChangeNotifier {
   // Hiệu ứng pháo hoa
   bool _showFireworks = false;
 
+  int cherryHelpCount = 1;
+
   GameStateProvider() {
     // Tự động khởi tạo 2 ô khởi điểm khi Provider được tạo
     addNewTile();
@@ -151,6 +153,19 @@ class GameStateProvider extends ChangeNotifier {
   void addPaidUndo() {
     paidUndoCount++;
     notifyListeners();
+  }
+
+  void addCherryHelp() {
+    cherryHelpCount++;
+    notifyListeners();
+  }
+
+  void useCherryHelp() {
+    if (cherryHelpCount > 0) {
+      cherryHelpCount--;
+      _removeAllCherryTiles();
+      notifyListeners();
+    }
   }
 
   // Lưu bestScore vào SharedPreferences
@@ -451,20 +466,15 @@ class GameStateProvider extends ChangeNotifier {
     }
   }
 
-  // Trợ giúp: Xóa tất cả ô có giá trị 2 (cherry)
-  void removeAllCherryTiles() {
-    bool removed = false;
+  // Trợ giúp: Xóa tất cả ô có giá trị 2 (cherry) - chỉ dùng nội bộ
+  void _removeAllCherryTiles() {
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
         if (board[i][j] == 2) {
           board[i][j] = 0;
           tileIds.remove(i * gridSize + j);
-          removed = true;
         }
       }
-    }
-    if (removed) {
-      notifyListeners();
     }
   }
 } 
