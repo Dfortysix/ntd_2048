@@ -378,6 +378,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Magic Basket'**
   String get magicBasket;
+
+  /// No description provided for @rateAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Fruits 2048'**
+  String get rateAppTitle;
+
+  /// No description provided for @rateAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'If you enjoy playing, please rate us 5 stars!'**
+  String get rateAppMessage;
+
+  /// No description provided for @rateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Now'**
+  String get rateNow;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get maybeLater;
+
+  /// No description provided for @thankYouForRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your rating! 🎉'**
+  String get thankYouForRating;
+
+  /// No description provided for @ratingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Play Store'**
+  String get ratingError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

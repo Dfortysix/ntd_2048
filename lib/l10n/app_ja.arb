@@ -13,8 +13,8 @@
   },
   "playAgain": "もう一度プレイ",
   "swipeToMerge": "スワイプして同じフルーツを結合 🍎",
-  "undoHelp": "前の手を戻す",
-  "undoHelpTooltip": "前の手を戻す（残り{count}回）",
+  "undoHelp": "最後の手を元に戻す",
+  "undoHelpTooltip": "最後の手を元に戻す（残り{count}回）",
   "@undoHelpTooltip": {
     "placeholders": {
       "count": {
@@ -23,8 +23,8 @@
     }
   },
   "watchAdForHelp": "広告を見てヘルプを取得",
-  "removeCherryHelp": "すべてのチェリー（2）を削除",
-  "removeCherryHelpTooltip": "すべてのチェリー（2）を削除",
+  "removeCherryHelp": "すべてのチェリータイル（2）を削除",
+  "removeCherryHelpTooltip": "すべてのチェリータイル（2）を削除",
   "addHelpMove": "ヘルプ手を追加",
   "addHelpMoveMessage": "ヘルプ手がなくなりました！",
   "freeMoveUsed": "• 無料手1回使用済み",
@@ -36,11 +36,11 @@
   "addCherryHelp": "チェリー削除ヘルプを追加",
   "addCherryHelpMessage": "チェリー削除ヘルプがなくなりました！",
   "watchAdForCherry": "• 広告を見てチェリー削除を1回追加",
-  "cherryHelpAdded": "🎉 チェリー削除ヘルプを1回追加しました！",
+  "cherryHelpAdded": "🎉 チェリー削除を1回追加しました！",
   "settings": "設定",
   "language": "言語",
   "music": "音楽",
-  "sound": "サウンド",
+  "sound": "音",
   "about": "について",
   "version": "バージョン",
   "developer": "開発者",
@@ -58,5 +58,11 @@
   "watermelon": "スイカ",
   "melon": "メロン",
   "coconut": "ココナッツ",
-  "magicBasket": "魔法のバスケット"
+  "magicBasket": "魔法のバスケット",
+  "rateAppTitle": "Fruits 2048を評価",
+  "rateAppMessage": "楽しんでプレイしていたら、5つ星で評価してください！",
+  "rateNow": "今すぐ評価",
+  "maybeLater": "また後で",
+  "thankYouForRating": "評価していただきありがとうございます！🎉",
+  "ratingError": "Google Playを開けませんでした"
 } 

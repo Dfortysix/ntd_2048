@@ -43,10 +43,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get watchAdForHelp => 'Regarder une pub pour de l\'aide';
 
   @override
-  String get removeCherryHelp => 'Supprimer toutes les cerises (2)';
+  String get removeCherryHelp => 'Supprimer toutes les tuiles Cerise (2)';
 
   @override
-  String get removeCherryHelpTooltip => 'Supprimer toutes les cerises (2)';
+  String get removeCherryHelpTooltip => 'Supprimer toutes les tuiles Cerise (2)';
 
   @override
   String get addHelpMove => 'Ajouter un coup d\'aide';
@@ -58,7 +58,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get freeMoveUsed => '• 1 coup gratuit utilisé';
 
   @override
-  String get watchAdForMove => '• Regarder une pub pour 1 coup supplémentaire';
+  String get watchAdForMove => '• Regarder une pub pour obtenir 1 coup de plus';
 
   @override
   String get adInfo => 'La pub s\'affichera pendant 15-30 secondes';
@@ -70,19 +70,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get watchAd => 'Regarder la pub';
 
   @override
-  String get helpMoveAdded => '🎉 Vous avez reçu 1 coup d\'aide supplémentaire !';
+  String get helpMoveAdded => '🎉 Vous avez obtenu 1 coup d\'aide de plus !';
 
   @override
-  String get addCherryHelp => 'Ajouter l\'aide de suppression de cerises';
+  String get addCherryHelp => 'Ajouter de l\'aide pour supprimer les cerises';
 
   @override
-  String get addCherryHelpMessage => 'Vous n\'avez plus d\'aide de suppression de cerises !';
+  String get addCherryHelpMessage => 'Vous n\'avez plus d\'aide pour supprimer les cerises !';
 
   @override
-  String get watchAdForCherry => '• Regarder une pub pour 1 suppression de cerise supplémentaire';
+  String get watchAdForCherry => '• Regarder une pub pour obtenir 1 suppression de cerise de plus';
 
   @override
-  String get cherryHelpAdded => '🎉 Vous avez reçu 1 aide de suppression de cerise supplémentaire !';
+  String get cherryHelpAdded => '🎉 Vous avez obtenu 1 suppression de cerise de plus !';
 
   @override
   String get settings => 'Paramètres';
@@ -149,4 +149,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get magicBasket => 'Panier magique';
+
+  @override
+  String get rateAppTitle => 'Évaluer Fruits 2048';
+
+  @override
+  String get rateAppMessage => 'Si vous aimez jouer, donnez-nous 5 étoiles !';
+
+  @override
+  String get rateNow => 'Évaluer maintenant';
+
+  @override
+  String get maybeLater => 'Peut-être plus tard';
+
+  @override
+  String get thankYouForRating => 'Merci pour votre évaluation ! 🎉';
+
+  @override
+  String get ratingError => 'Impossible d\'ouvrir Google Play';
 }

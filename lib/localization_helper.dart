@@ -68,6 +68,12 @@ class LocalizationHelper {
       case 'melon': return localizations.melon;
       case 'coconut': return localizations.coconut;
       case 'magicBasket': return localizations.magicBasket;
+      case 'rateAppTitle': return localizations.rateAppTitle;
+      case 'rateAppMessage': return localizations.rateAppMessage;
+      case 'rateNow': return localizations.rateNow;
+      case 'maybeLater': return localizations.maybeLater;
+      case 'thankYouForRating': return localizations.thankYouForRating;
+      case 'ratingError': return localizations.ratingError;
       default: return key;
     }
   }

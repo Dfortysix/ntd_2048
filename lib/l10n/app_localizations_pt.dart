@@ -29,7 +29,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get playAgain => 'Jogar novamente';
 
   @override
-  String get swipeToMerge => 'Deslize para fundir frutas similares 🍎';
+  String get swipeToMerge => 'Deslize para combinar frutas similares 🍎';
 
   @override
   String get undoHelp => 'Desfazer último movimento';
@@ -43,10 +43,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get watchAdForHelp => 'Assistir anúncio para ajuda';
 
   @override
-  String get removeCherryHelp => 'Remover todas as cerejas (2)';
+  String get removeCherryHelp => 'Remover todas as peças de Cereja (2)';
 
   @override
-  String get removeCherryHelpTooltip => 'Remover todas as cerejas (2)';
+  String get removeCherryHelpTooltip => 'Remover todas as peças de Cereja (2)';
 
   @override
   String get addHelpMove => 'Adicionar movimento de ajuda';
@@ -58,7 +58,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get freeMoveUsed => '• 1 movimento gratuito usado';
 
   @override
-  String get watchAdForMove => '• Assistir anúncio para 1 movimento mais';
+  String get watchAdForMove => '• Assistir anúncio para obter 1 movimento a mais';
 
   @override
   String get adInfo => 'O anúncio será exibido por 15-30 segundos';
@@ -70,19 +70,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get watchAd => 'Assistir anúncio';
 
   @override
-  String get helpMoveAdded => '🎉 Você recebeu 1 movimento de ajuda a mais!';
+  String get helpMoveAdded => '🎉 Você ganhou 1 movimento de ajuda a mais!';
 
   @override
-  String get addCherryHelp => 'Adicionar ajuda de remoção de cerejas';
+  String get addCherryHelp => 'Adicionar ajuda para remover cerejas';
 
   @override
-  String get addCherryHelpMessage => 'Você ficou sem ajuda de remoção de cerejas!';
+  String get addCherryHelpMessage => 'Você ficou sem ajuda para remover cerejas!';
 
   @override
-  String get watchAdForCherry => '• Assistir anúncio para 1 remoção de cereja a mais';
+  String get watchAdForCherry => '• Assistir anúncio para obter 1 remoção de cereja a mais';
 
   @override
-  String get cherryHelpAdded => '🎉 Você recebeu 1 ajuda de remoção de cereja a mais!';
+  String get cherryHelpAdded => '🎉 Você ganhou 1 remoção de cereja a mais!';
 
   @override
   String get settings => 'Configurações';
@@ -149,4 +149,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get magicBasket => 'Cesta mágica';
+
+  @override
+  String get rateAppTitle => 'Avaliar Fruits 2048';
+
+  @override
+  String get rateAppMessage => 'Se você gosta de jogar, avalie-nos com 5 estrelas!';
+
+  @override
+  String get rateNow => 'Avaliar agora';
+
+  @override
+  String get maybeLater => 'Talvez mais tarde';
+
+  @override
+  String get thankYouForRating => 'Obrigado pela sua avaliação! 🎉';
+
+  @override
+  String get ratingError => 'Não foi possível abrir o Google Play';
 }

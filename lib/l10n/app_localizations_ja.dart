@@ -32,21 +32,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get swipeToMerge => 'スワイプして同じフルーツを結合 🍎';
 
   @override
-  String get undoHelp => '前の手を戻す';
+  String get undoHelp => '最後の手を元に戻す';
 
   @override
   String undoHelpTooltip(int count) {
-    return '前の手を戻す（残り$count回）';
+    return '最後の手を元に戻す（残り$count回）';
   }
 
   @override
   String get watchAdForHelp => '広告を見てヘルプを取得';
 
   @override
-  String get removeCherryHelp => 'すべてのチェリー（2）を削除';
+  String get removeCherryHelp => 'すべてのチェリータイル（2）を削除';
 
   @override
-  String get removeCherryHelpTooltip => 'すべてのチェリー（2）を削除';
+  String get removeCherryHelpTooltip => 'すべてのチェリータイル（2）を削除';
 
   @override
   String get addHelpMove => 'ヘルプ手を追加';
@@ -82,7 +82,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get watchAdForCherry => '• 広告を見てチェリー削除を1回追加';
 
   @override
-  String get cherryHelpAdded => '🎉 チェリー削除ヘルプを1回追加しました！';
+  String get cherryHelpAdded => '🎉 チェリー削除を1回追加しました！';
 
   @override
   String get settings => '設定';
@@ -94,7 +94,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get music => '音楽';
 
   @override
-  String get sound => 'サウンド';
+  String get sound => '音';
 
   @override
   String get about => 'について';
@@ -149,4 +149,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get magicBasket => '魔法のバスケット';
+
+  @override
+  String get rateAppTitle => 'Fruits 2048を評価';
+
+  @override
+  String get rateAppMessage => '楽しんでプレイしていたら、5つ星で評価してください！';
+
+  @override
+  String get rateNow => '今すぐ評価';
+
+  @override
+  String get maybeLater => 'また後で';
+
+  @override
+  String get thankYouForRating => '評価していただきありがとうございます！🎉';
+
+  @override
+  String get ratingError => 'Google Playを開けませんでした';
 }

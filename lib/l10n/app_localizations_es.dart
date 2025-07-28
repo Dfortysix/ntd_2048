@@ -149,4 +149,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get magicBasket => 'Cesta mágica';
+
+  @override
+  String get rateAppTitle => 'Calificar Fruits 2048';
+
+  @override
+  String get rateAppMessage => '¡Si disfrutas jugando, califícanos con 5 estrellas!';
+
+  @override
+  String get rateNow => 'Calificar ahora';
+
+  @override
+  String get maybeLater => 'Quizás más tarde';
+
+  @override
+  String get thankYouForRating => '¡Gracias por tu calificación! 🎉';
+
+  @override
+  String get ratingError => 'No se pudo abrir Google Play';
 }

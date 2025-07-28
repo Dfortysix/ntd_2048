@@ -149,4 +149,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get magicBasket => 'Magic Basket';
+
+  @override
+  String get rateAppTitle => 'Rate Fruits 2048';
+
+  @override
+  String get rateAppMessage => 'If you enjoy playing, please rate us 5 stars!';
+
+  @override
+  String get rateNow => 'Rate Now';
+
+  @override
+  String get maybeLater => 'Maybe Later';
+
+  @override
+  String get thankYouForRating => 'Thank you for your rating! 🎉';
+
+  @override
+  String get ratingError => 'Could not open Play Store';
 }

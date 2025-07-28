@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'language_provider.dart';
 import 'localization_helper.dart';
+import 'rating_service.dart';
+import 'rating_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -16,104 +18,141 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 16),
-          _buildLanguageSection(context),
-          const Divider(),
-          _buildAboutSection(context),
+          // Language Section
+          Consumer<LanguageProvider>(
+            builder: (context, languageProvider, child) {
+              return Card(
+                margin: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        LocalizationHelper.getLocalizedString(context, 'language'),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Text('🇺🇸'),
+                      title: const Text('English'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'en'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('en'),
+                    ),
+                    ListTile(
+                      leading: const Text('🇻🇳'),
+                      title: const Text('Tiếng Việt'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'vi'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('vi'),
+                    ),
+                    ListTile(
+                      leading: const Text('🇫🇷'),
+                      title: const Text('Français'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'fr'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('fr'),
+                    ),
+                    ListTile(
+                      leading: const Text('🇯🇵'),
+                      title: const Text('日本語'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'ja'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('ja'),
+                    ),
+                    ListTile(
+                      leading: const Text('🇪🇸'),
+                      title: const Text('Español'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'es'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('es'),
+                    ),
+                    ListTile(
+                      leading: const Text('🇵🇹'),
+                      title: const Text('Português'),
+                      trailing: languageProvider.getCurrentLanguageCode() == 'pt'
+                          ? const Icon(Icons.check, color: Color(0xFF4CAF50))
+                          : null,
+                      onTap: () => languageProvider.setLanguage('pt'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          
+          // Support Section
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Support',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.star, color: Color(0xFFFFD700)),
+                  title: Text(LocalizationHelper.getLocalizedString(context, 'rateAppTitle')),
+                  subtitle: Text(LocalizationHelper.getLocalizedString(context, 'rateAppMessage')),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const RatingDialog(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          
+          // About Section
+          Card(
+            margin: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    LocalizationHelper.getLocalizedString(context, 'about'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: Text(LocalizationHelper.getLocalizedString(context, 'version')),
+                  subtitle: const Text('1.0.0'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(LocalizationHelper.getLocalizedString(context, 'developer')),
+                  subtitle: const Text('Fruits 2048 Team'),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  Widget _buildLanguageSection(BuildContext context) {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Language',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF4CAF50),
-                ),
-              ),
-            ),
-            ...['en', 'vi', 'fr', 'ja', 'es', 'pt'].map((languageCode) {
-              final languageName = _getLanguageName(languageCode);
-              final isSelected = languageProvider.getCurrentLanguageCode() == languageCode;
-              
-              return ListTile(
-                leading: Icon(
-                  Icons.language,
-                  color: isSelected ? const Color(0xFF4CAF50) : Colors.grey,
-                ),
-                title: Text(languageName),
-                trailing: isSelected 
-                  ? const Icon(Icons.check, color: Color(0xFF4CAF50))
-                  : null,
-                onTap: () {
-                  languageProvider.setLanguage(languageCode);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Language changed to $languageName'),
-                      backgroundColor: const Color(0xFF4CAF50),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAboutSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'About',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF4CAF50),
-            ),
-          ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.info_outline, color: Color(0xFF4CAF50)),
-          title: const Text('Version'),
-          subtitle: const Text('1.0.2'),
-        ),
-        ListTile(
-          leading: const Icon(Icons.person_outline, color: Color(0xFF4CAF50)),
-          title: const Text('Developer'),
-          subtitle: const Text('Fruits 2048 Team'),
-        ),
-        ListTile(
-          leading: const Icon(Icons.favorite_outline, color: Color(0xFF4CAF50)),
-          title: const Text('Fruits 2048'),
-          subtitle: const Text('A fun fruit-themed 2048 game'),
-        ),
-      ],
-    );
-  }
-
-  String _getLanguageName(String languageCode) {
-    switch (languageCode) {
-      case 'en': return 'English';
-      case 'vi': return 'Tiếng Việt';
-      case 'fr': return 'Français';
-      case 'ja': return '日本語';
-      case 'es': return 'Español';
-      case 'pt': return 'Português';
-      default: return 'English';
-    }
   }
 } 

@@ -58,5 +58,11 @@
   "watermelon": "Watermelon",
   "melon": "Melon",
   "coconut": "Coconut",
-  "magicBasket": "Magic Basket"
+  "magicBasket": "Magic Basket",
+  "rateAppTitle": "Rate Fruits 2048",
+  "rateAppMessage": "If you enjoy playing, please rate us 5 stars!",
+  "rateNow": "Rate Now",
+  "maybeLater": "Maybe Later",
+  "thankYouForRating": "Thank you for your rating! 🎉",
+  "ratingError": "Could not open Play Store"
 } 

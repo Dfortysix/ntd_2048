@@ -149,4 +149,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get magicBasket => 'Giỏ thần kỳ';
+
+  @override
+  String get rateAppTitle => 'Đánh giá Fruits 2048';
+
+  @override
+  String get rateAppMessage => 'Nếu bạn thích chơi, hãy đánh giá 5 sao cho chúng tôi!';
+
+  @override
+  String get rateNow => 'Đánh giá ngay';
+
+  @override
+  String get maybeLater => 'Để sau';
+
+  @override
+  String get thankYouForRating => 'Cảm ơn bạn đã đánh giá! 🎉';
+
+  @override
+  String get ratingError => 'Không thể mở Google Play';
 }

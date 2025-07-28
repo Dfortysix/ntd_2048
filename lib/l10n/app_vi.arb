@@ -58,5 +58,11 @@
   "watermelon": "Dưa hấu",
   "melon": "Dưa gang",
   "coconut": "Dừa",
-  "magicBasket": "Giỏ thần kỳ"
+  "magicBasket": "Giỏ thần kỳ",
+  "rateAppTitle": "Đánh giá Fruits 2048",
+  "rateAppMessage": "Nếu bạn thích chơi, hãy đánh giá 5 sao cho chúng tôi!",
+  "rateNow": "Đánh giá ngay",
+  "maybeLater": "Để sau",
+  "thankYouForRating": "Cảm ơn bạn đã đánh giá! 🎉",
+  "ratingError": "Không thể mở Google Play"
 } 

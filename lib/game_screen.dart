@@ -16,6 +16,8 @@ import 'package:provider/provider.dart';
 import 'game_state_provider.dart';
 import 'settings_screen.dart';
 import 'localization_helper.dart';
+import 'rating_service.dart';
+import 'rating_dialog.dart';
 
 class Fruits2048Screen extends StatefulWidget {
   const Fruits2048Screen({super.key});
@@ -40,6 +42,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
   
   // Quảng cáo xen kẽ được quản lý bởi AdManager
   
+  // Đếm số lần chơi để hiển thị dialog đánh giá
+  int _playCount = 0;
+  
   @override
   void initState() {
     super.initState();
@@ -50,6 +55,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     _initBackgroundMusic();
     AdManager.loadInterstitialAd();
     AdManager.loadRewardedAd();
+    _loadPlayCount();
   }
 
   @override
@@ -65,6 +71,34 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  Future<void> _loadPlayCount() async {
+    setState(() {
+      _playCount = prefs.getInt('play_count') ?? 0;
+    });
+  }
+
+  Future<void> _incrementPlayCount() async {
+    _playCount++;
+    await prefs.setInt('play_count', _playCount);
+    await RatingService.savePlayCount(_playCount);
+    
+    // Kiểm tra xem có nên hiển thị dialog đánh giá không
+    if (await RatingService.shouldShowRatingPrompt(_playCount)) {
+      if (mounted) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _showRatingDialog();
+      }
+    }
+  }
+
+  void _showRatingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const RatingDialog(),
+    );
+  }
+
   void _performUndo() {
     final gameState = context.read<GameStateProvider>();
     gameState.performUndo();
@@ -76,6 +110,9 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
       if (gameState.justMergedSet.isNotEmpty) {
         _playMergeSound();
       }
+      // Tăng số lần chơi và kiểm tra hiển thị dialog đánh giá
+      _incrementPlayCount();
+      
       // Kiểm tra game over và game won
       _checkGameState();
       
