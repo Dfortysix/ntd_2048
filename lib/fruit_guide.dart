@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'localization_helper.dart';
 
 class FruitGuide extends StatelessWidget {
   const FruitGuide({super.key});
@@ -19,9 +20,9 @@ class FruitGuide extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '🍎 Hướng dẫn gộp trái cây:',
-            style: TextStyle(
+          Text(
+            '🍎 ${LocalizationHelper.getLocalizedString(context, 'fruitGuide')}:',
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2E7D32),
@@ -32,31 +33,31 @@ class FruitGuide extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFruitStep('🍒', 'Cherry'),
+                _buildFruitStep(context, '🍒', LocalizationHelper.getLocalizedString(context, 'cherry')),
                 _buildArrow(),
-                _buildFruitStep('🍓', 'Dâu tây'),
+                _buildFruitStep(context, '🍓', LocalizationHelper.getLocalizedString(context, 'strawberry')),
                 _buildArrow(),
-                _buildFruitStep('🍇', 'Nho'),
+                _buildFruitStep(context, '🍇', LocalizationHelper.getLocalizedString(context, 'grape')),
                 _buildArrow(),
-                _buildFruitStep('🍊', 'Quýt'),
+                _buildFruitStep(context, '🍊', LocalizationHelper.getLocalizedString(context, 'orange')),
                 _buildArrow(),
-                _buildFruitStep('🍎', 'Táo'),
+                _buildFruitStep(context, '🍎', LocalizationHelper.getLocalizedString(context, 'apple')),
                 _buildArrow(),
-                _buildFruitStep('🍐', 'Lê'),
+                _buildFruitStep(context, '🍐', LocalizationHelper.getLocalizedString(context, 'pear')),
                 _buildArrow(),
-                _buildFruitStep('🍑', 'Đào'),
+                _buildFruitStep(context, '🍑', LocalizationHelper.getLocalizedString(context, 'peach')),
                 _buildArrow(),
-                _buildFruitStep('🥭', 'Xoài'),
+                _buildFruitStep(context, '🥭', LocalizationHelper.getLocalizedString(context, 'mango')),
                 _buildArrow(),
-                _buildFruitStep('🍍', 'Dứa'),
+                _buildFruitStep(context, '🍍', LocalizationHelper.getLocalizedString(context, 'pineapple')),
                 _buildArrow(),
-                _buildFruitStep('🍉', 'Dưa hấu'),
+                _buildFruitStep(context, '🍉', LocalizationHelper.getLocalizedString(context, 'watermelon')),
                 _buildArrow(),
-                _buildFruitStep('🍈', 'Dưa gang'),
+                _buildFruitStep(context, '🍈', LocalizationHelper.getLocalizedString(context, 'melon')),
                 _buildArrow(),
-                _buildFruitStep('🥥', 'Dừa'),
+                _buildFruitStep(context, '🥥', LocalizationHelper.getLocalizedString(context, 'coconut')),
                 _buildArrow(),
-                _buildFruitStep('🧺', 'Giỏ thần kỳ', isSpecial: true),
+                _buildFruitStep(context, '🧺', LocalizationHelper.getLocalizedString(context, 'magicBasket'), isSpecial: true),
               ],
             ),
           ),
@@ -65,7 +66,7 @@ class FruitGuide extends StatelessWidget {
     );
   }
 
-  Widget _buildFruitStep(String emoji, String name, {bool isSpecial = false}) {
+  Widget _buildFruitStep(BuildContext context, String emoji, String name, {bool isSpecial = false}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
