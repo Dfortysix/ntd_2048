@@ -141,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.info),
                   title: Text(LocalizationHelper.getLocalizedString(context, 'version')),
-                  subtitle: const Text('1.0.0'),
+                  subtitle: const Text('1.0.3'),
                 ),
                 ListTile(
                   leading: const Icon(Icons.person),
