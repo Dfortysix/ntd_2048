@@ -14,6 +14,8 @@ import 'banner_ad_widget.dart';
 import 'game_state.dart';
 import 'package:provider/provider.dart';
 import 'game_state_provider.dart';
+import 'settings_screen.dart';
+import 'localization_helper.dart';
 
 class Fruits2048Screen extends StatefulWidget {
   const Fruits2048Screen({super.key});
@@ -112,15 +114,15 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('🍂 Hết trái cây rồi!'),
-        content: Text('Bạn đã thu thập được ${gameState.score} trái cây! 🍎'),
+        title: Text(LocalizationHelper.getLocalizedString(context, 'gameOver')),
+        content: Text(LocalizationHelper.gameOverMessage(context, gameState.score)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               context.read<GameStateProvider>().resetGame();
             },
-            child: const Text('Chơi lại'),
+            child: Text(LocalizationHelper.getLocalizedString(context, 'playAgain')),
           ),
         ],
       ),
@@ -133,7 +135,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     return Scaffold(
       backgroundColor: Colors.transparent, // Để gradient hiển thị
       appBar: AppBar(
-        title: const Text('🍎 Fruits 2048'),
+        title: Text(LocalizationHelper.getLocalizedString(context, 'appTitle')),
         backgroundColor: const Color(0xFF4CAF50),
         foregroundColor: Colors.white,
         actions: [
@@ -146,6 +148,15 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
               gameState.resetGame();
             },
             icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
@@ -257,8 +268,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  ScoreBox('Điểm', gameState.score),
-                                  ScoreBox('Cao nhất', gameState.bestScore),
+                                  ScoreBox(LocalizationHelper.getLocalizedString(context, 'score'), gameState.score),
+                                  ScoreBox(LocalizationHelper.getLocalizedString(context, 'bestScore'), gameState.bestScore),
                                   // Nhóm trợ giúp (undo/quảng cáo + xóa cherry)
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -274,8 +285,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                           color: _helpIconColor(gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0),
                                         ),
                                         tooltip: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
-                                            ? 'Quay lại nước đi trước (${gameState.freeUndoCount + gameState.paidUndoCount} lượt còn lại)'
-                                            : 'Xem quảng cáo để nhận lượt trợ giúp',
+                                            ? LocalizationHelper.undoHelpTooltip(context, gameState.freeUndoCount + gameState.paidUndoCount)
+                                            : LocalizationHelper.getLocalizedString(context, 'watchAdForHelp'),
                                         splashColor: (gameState.freeUndoCount > 0 || gameState.paidUndoCount > 0)
                                             ? null
                                             : Colors.orangeAccent,
@@ -296,7 +307,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                                           Icons.delete_sweep,
                                           color: _cherryHelpIconColor(context.read<GameStateProvider>().cherryHelpCount > 0),
                                         ),
-                                        tooltip: 'Xóa tất cả ô Cherry (2)',
+                                        tooltip: LocalizationHelper.getLocalizedString(context, 'removeCherryHelpTooltip'),
                                         splashColor: context.read<GameStateProvider>().cherryHelpCount > 0
                                             ? null
                                             : Colors.orangeAccent,
@@ -320,10 +331,10 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                             ),
                           ),
                           const FruitGuide(),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 16),
-                            child: Text('Vuốt để gộp các trái cây giống nhau 🍎',
-                                style: TextStyle(color: Color(0xFF2E7D32))),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 16),
+                            child: Text(LocalizationHelper.getLocalizedString(context, 'swipeToMerge'),
+                                style: const TextStyle(color: Color(0xFF2E7D32))),
                           ),
                         ],
                       ),
@@ -462,15 +473,15 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('🔄 Thêm lượt trợ giúp'),
+        title: Text(LocalizationHelper.getLocalizedString(context, 'addHelpMove')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Bạn đã hết lượt trợ giúp!'),
+            Text(LocalizationHelper.getLocalizedString(context, 'addHelpMoveMessage')),
             const SizedBox(height: 8),
-            const Text('• 1 lượt miễn phí đã sử dụng'),
-            const Text('• Xem quảng cáo để nhận thêm 1 lượt'),
+            Text(LocalizationHelper.getLocalizedString(context, 'freeMoveUsed')),
+            Text(LocalizationHelper.getLocalizedString(context, 'watchAdForMove')),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -479,14 +490,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: const Color(0xFFFF9800)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Color(0xFFFF9800), size: 16),
-                  SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: Color(0xFFFF9800), size: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Quảng cáo sẽ hiển thị trong 15-30 giây',
-                      style: TextStyle(fontSize: 12, color: Color(0xFFFF9800)),
+                      LocalizationHelper.getLocalizedString(context, 'adInfo'),
+                      style: const TextStyle(fontSize: 12, color: Color(0xFFFF9800)),
                     ),
                   ),
                 ],
@@ -497,7 +508,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(LocalizationHelper.getLocalizedString(context, 'cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -508,12 +519,12 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
               backgroundColor: const Color(0xFF4CAF50),
               foregroundColor: Colors.white,
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.play_circle_outline, size: 16),
-                SizedBox(width: 4),
-                Text('Xem quảng cáo'),
+                const Icon(Icons.play_circle_outline, size: 16),
+                const SizedBox(width: 4),
+                Text(LocalizationHelper.getLocalizedString(context, 'watchAd')),
               ],
             ),
           ),
@@ -527,8 +538,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     AdManager.showRewardedAd(() {
       context.read<GameStateProvider>().addPaidUndo();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🎉 Bạn đã nhận thêm 1 lượt trợ giúp!'),
+        SnackBar(
+          content: Text(LocalizationHelper.getLocalizedString(context, 'helpMoveAdded')),
           backgroundColor: Color(0xFF4CAF50),
           duration: Duration(seconds: 2),
         ),
@@ -541,14 +552,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('🔄 Thêm lượt xóa Cherry'),
+        title: Text(LocalizationHelper.getLocalizedString(context, 'addCherryHelp')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Bạn đã hết lượt xóa Cherry!'),
+            Text(LocalizationHelper.getLocalizedString(context, 'addCherryHelpMessage')),
             const SizedBox(height: 8),
-            const Text('• Xem quảng cáo để nhận thêm 1 lượt xóa Cherry'),
+            Text(LocalizationHelper.getLocalizedString(context, 'watchAdForCherry')),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -557,14 +568,14 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: const Color(0xFFFF9800)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Color(0xFFFF9800), size: 16),
-                  SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: Color(0xFFFF9800), size: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Quảng cáo sẽ hiển thị trong 15-30 giây',
-                      style: TextStyle(fontSize: 12, color: Color(0xFFFF9800)),
+                      LocalizationHelper.getLocalizedString(context, 'adInfo'),
+                      style: const TextStyle(fontSize: 12, color: Color(0xFFFF9800)),
                     ),
                   ),
                 ],
@@ -575,7 +586,7 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(LocalizationHelper.getLocalizedString(context, 'cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -586,12 +597,12 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
               backgroundColor: const Color(0xFF4CAF50),
               foregroundColor: Colors.white,
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.play_circle_outline, size: 16),
-                SizedBox(width: 4),
-                Text('Xem quảng cáo'),
+                const Icon(Icons.play_circle_outline, size: 16),
+                const SizedBox(width: 4),
+                Text(LocalizationHelper.getLocalizedString(context, 'watchAd')),
               ],
             ),
           ),
@@ -605,8 +616,8 @@ class _Fruits2048ScreenState extends State<Fruits2048Screen> {
     AdManager.showRewardedAd(() {
       context.read<GameStateProvider>().addCherryHelp();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🎉 Bạn đã nhận thêm 1 lượt xóa Cherry!'),
+        SnackBar(
+          content: Text(LocalizationHelper.getLocalizedString(context, 'cherryHelpAdded')),
           backgroundColor: Color(0xFF4CAF50),
           duration: Duration(seconds: 2),
         ),

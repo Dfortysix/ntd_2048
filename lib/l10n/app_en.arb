@@ -1,0 +1,62 @@
+{
+  "appTitle": "🍎 Fruits 2048",
+  "score": "Score",
+  "bestScore": "Best",
+  "gameOver": "🍂 No more fruits!",
+  "gameOverMessage": "You collected {score} fruits! 🍎",
+  "@gameOverMessage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "playAgain": "Play Again",
+  "swipeToMerge": "Swipe to merge similar fruits 🍎",
+  "undoHelp": "Undo last move",
+  "undoHelpTooltip": "Undo last move ({count} left)",
+  "@undoHelpTooltip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdForHelp": "Watch ad for help",
+  "removeCherryHelp": "Remove all Cherry tiles (2)",
+  "removeCherryHelpTooltip": "Remove all Cherry tiles (2)",
+  "addHelpMove": "Add help move",
+  "addHelpMoveMessage": "You're out of help moves!",
+  "freeMoveUsed": "• 1 free move used",
+  "watchAdForMove": "• Watch ad to get 1 more move",
+  "adInfo": "Ad will show for 15-30 seconds",
+  "cancel": "Cancel",
+  "watchAd": "Watch Ad",
+  "helpMoveAdded": "🎉 You got 1 more help move!",
+  "addCherryHelp": "Add Cherry removal help",
+  "addCherryHelpMessage": "You're out of Cherry removal help!",
+  "watchAdForCherry": "• Watch ad to get 1 more Cherry removal",
+  "cherryHelpAdded": "🎉 You got 1 more Cherry removal help!",
+  "settings": "Settings",
+  "language": "Language",
+  "music": "Music",
+  "sound": "Sound",
+  "about": "About",
+  "version": "Version",
+  "developer": "Developer",
+  "fruits2048": "Fruits 2048",
+  "fruitGuide": "Fruit Guide",
+  "cherry": "Cherry",
+  "strawberry": "Strawberry", 
+  "grape": "Grape",
+  "orange": "Orange",
+  "apple": "Apple",
+  "pear": "Pear",
+  "peach": "Peach",
+  "mango": "Mango",
+  "pineapple": "Pineapple",
+  "watermelon": "Watermelon",
+  "melon": "Melon",
+  "coconut": "Coconut",
+  "magicBasket": "Magic Basket"
+} 

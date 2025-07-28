@@ -1,0 +1,62 @@
+{
+  "appTitle": "🍎 Fruits 2048",
+  "score": "Điểm",
+  "bestScore": "Cao nhất",
+  "gameOver": "🍂 Hết trái cây rồi!",
+  "gameOverMessage": "Bạn đã thu thập được {score} trái cây! 🍎",
+  "@gameOverMessage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "playAgain": "Chơi lại",
+  "swipeToMerge": "Vuốt để gộp các trái cây giống nhau 🍎",
+  "undoHelp": "Quay lại nước đi trước",
+  "undoHelpTooltip": "Quay lại nước đi trước ({count} lượt còn lại)",
+  "@undoHelpTooltip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdForHelp": "Xem quảng cáo để nhận lượt trợ giúp",
+  "removeCherryHelp": "Xóa tất cả ô Cherry (2)",
+  "removeCherryHelpTooltip": "Xóa tất cả ô Cherry (2)",
+  "addHelpMove": "Thêm lượt trợ giúp",
+  "addHelpMoveMessage": "Bạn đã hết lượt trợ giúp!",
+  "freeMoveUsed": "• 1 lượt miễn phí đã sử dụng",
+  "watchAdForMove": "• Xem quảng cáo để nhận thêm 1 lượt",
+  "adInfo": "Quảng cáo sẽ hiển thị trong 15-30 giây",
+  "cancel": "Hủy",
+  "watchAd": "Xem quảng cáo",
+  "helpMoveAdded": "🎉 Bạn đã nhận thêm 1 lượt trợ giúp!",
+  "addCherryHelp": "Thêm lượt xóa Cherry",
+  "addCherryHelpMessage": "Bạn đã hết lượt xóa Cherry!",
+  "watchAdForCherry": "• Xem quảng cáo để nhận thêm 1 lượt xóa Cherry",
+  "cherryHelpAdded": "🎉 Bạn đã nhận thêm 1 lượt xóa Cherry!",
+  "settings": "Cài đặt",
+  "language": "Ngôn ngữ",
+  "music": "Âm nhạc",
+  "sound": "Âm thanh",
+  "about": "Thông tin",
+  "version": "Phiên bản",
+  "developer": "Nhà phát triển",
+  "fruits2048": "Fruits 2048",
+  "fruitGuide": "Hướng dẫn trái cây",
+  "cherry": "Anh đào",
+  "strawberry": "Dâu tây", 
+  "grape": "Nho",
+  "orange": "Quýt",
+  "apple": "Táo",
+  "pear": "Lê",
+  "peach": "Đào",
+  "mango": "Xoài",
+  "pineapple": "Dứa",
+  "watermelon": "Dưa hấu",
+  "melon": "Dưa gang",
+  "coconut": "Dừa",
+  "magicBasket": "Giỏ thần kỳ"
+} 

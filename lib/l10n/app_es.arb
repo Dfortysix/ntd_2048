@@ -1,0 +1,62 @@
+{
+  "appTitle": "🍎 Fruits 2048",
+  "score": "Puntuación",
+  "bestScore": "Mejor",
+  "gameOver": "🍂 ¡No hay más frutas!",
+  "gameOverMessage": "¡Has recolectado {score} frutas! 🍎",
+  "@gameOverMessage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "playAgain": "Jugar de nuevo",
+  "swipeToMerge": "Desliza para fusionar frutas similares 🍎",
+  "undoHelp": "Deshacer último movimiento",
+  "undoHelpTooltip": "Deshacer último movimiento ({count} restantes)",
+  "@undoHelpTooltip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdForHelp": "Ver anuncio para ayuda",
+  "removeCherryHelp": "Eliminar todas las cerezas (2)",
+  "removeCherryHelpTooltip": "Eliminar todas las cerezas (2)",
+  "addHelpMove": "Agregar movimiento de ayuda",
+  "addHelpMoveMessage": "¡Te has quedado sin movimientos de ayuda!",
+  "freeMoveUsed": "• 1 movimiento gratuito usado",
+  "watchAdForMove": "• Ver anuncio para 1 movimiento más",
+  "adInfo": "El anuncio se mostrará durante 15-30 segundos",
+  "cancel": "Cancelar",
+  "watchAd": "Ver anuncio",
+  "helpMoveAdded": "🎉 ¡Has recibido 1 movimiento de ayuda más!",
+  "addCherryHelp": "Agregar ayuda de eliminación de cerezas",
+  "addCherryHelpMessage": "¡Te has quedado sin ayuda de eliminación de cerezas!",
+  "watchAdForCherry": "• Ver anuncio para 1 eliminación de cereza más",
+  "cherryHelpAdded": "🎉 ¡Has recibido 1 ayuda de eliminación de cereza más!",
+  "settings": "Configuración",
+  "language": "Idioma",
+  "music": "Música",
+  "sound": "Sonido",
+  "about": "Acerca de",
+  "version": "Versión",
+  "developer": "Desarrollador",
+  "fruits2048": "Fruits 2048",
+  "fruitGuide": "Guía de frutas",
+  "cherry": "Cereza",
+  "strawberry": "Fresa", 
+  "grape": "Uva",
+  "orange": "Naranja",
+  "apple": "Manzana",
+  "pear": "Pera",
+  "peach": "Melocotón",
+  "mango": "Mango",
+  "pineapple": "Piña",
+  "watermelon": "Sandía",
+  "melon": "Melón",
+  "coconut": "Coco",
+  "magicBasket": "Cesta mágica"
+} 

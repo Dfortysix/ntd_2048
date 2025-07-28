@@ -1,0 +1,62 @@
+{
+  "appTitle": "🍎 Fruits 2048",
+  "score": "Score",
+  "bestScore": "Meilleur",
+  "gameOver": "🍂 Plus de fruits !",
+  "gameOverMessage": "Vous avez collecté {score} fruits ! 🍎",
+  "@gameOverMessage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "playAgain": "Rejouer",
+  "swipeToMerge": "Glissez pour fusionner les fruits similaires 🍎",
+  "undoHelp": "Annuler le dernier coup",
+  "undoHelpTooltip": "Annuler le dernier coup ({count} restants)",
+  "@undoHelpTooltip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdForHelp": "Regarder une pub pour de l'aide",
+  "removeCherryHelp": "Supprimer toutes les cerises (2)",
+  "removeCherryHelpTooltip": "Supprimer toutes les cerises (2)",
+  "addHelpMove": "Ajouter un coup d'aide",
+  "addHelpMoveMessage": "Vous n'avez plus de coups d'aide !",
+  "freeMoveUsed": "• 1 coup gratuit utilisé",
+  "watchAdForMove": "• Regarder une pub pour 1 coup supplémentaire",
+  "adInfo": "La pub s'affichera pendant 15-30 secondes",
+  "cancel": "Annuler",
+  "watchAd": "Regarder la pub",
+  "helpMoveAdded": "🎉 Vous avez reçu 1 coup d'aide supplémentaire !",
+  "addCherryHelp": "Ajouter l'aide de suppression de cerises",
+  "addCherryHelpMessage": "Vous n'avez plus d'aide de suppression de cerises !",
+  "watchAdForCherry": "• Regarder une pub pour 1 suppression de cerise supplémentaire",
+  "cherryHelpAdded": "🎉 Vous avez reçu 1 aide de suppression de cerise supplémentaire !",
+  "settings": "Paramètres",
+  "language": "Langue",
+  "music": "Musique",
+  "sound": "Son",
+  "about": "À propos",
+  "version": "Version",
+  "developer": "Développeur",
+  "fruits2048": "Fruits 2048",
+  "fruitGuide": "Guide des fruits",
+  "cherry": "Cerise",
+  "strawberry": "Fraise", 
+  "grape": "Raisin",
+  "orange": "Orange",
+  "apple": "Pomme",
+  "pear": "Poire",
+  "peach": "Pêche",
+  "mango": "Mangue",
+  "pineapple": "Ananas",
+  "watermelon": "Pastèque",
+  "melon": "Melon",
+  "coconut": "Noix de coco",
+  "magicBasket": "Panier magique"
+} 

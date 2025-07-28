@@ -1,0 +1,62 @@
+{
+  "appTitle": "🍎 Fruits 2048",
+  "score": "Pontuação",
+  "bestScore": "Melhor",
+  "gameOver": "🍂 Sem mais frutas!",
+  "gameOverMessage": "Você coletou {score} frutas! 🍎",
+  "@gameOverMessage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "playAgain": "Jogar novamente",
+  "swipeToMerge": "Deslize para fundir frutas similares 🍎",
+  "undoHelp": "Desfazer último movimento",
+  "undoHelpTooltip": "Desfazer último movimento ({count} restantes)",
+  "@undoHelpTooltip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdForHelp": "Assistir anúncio para ajuda",
+  "removeCherryHelp": "Remover todas as cerejas (2)",
+  "removeCherryHelpTooltip": "Remover todas as cerejas (2)",
+  "addHelpMove": "Adicionar movimento de ajuda",
+  "addHelpMoveMessage": "Você ficou sem movimentos de ajuda!",
+  "freeMoveUsed": "• 1 movimento gratuito usado",
+  "watchAdForMove": "• Assistir anúncio para 1 movimento mais",
+  "adInfo": "O anúncio será exibido por 15-30 segundos",
+  "cancel": "Cancelar",
+  "watchAd": "Assistir anúncio",
+  "helpMoveAdded": "🎉 Você recebeu 1 movimento de ajuda a mais!",
+  "addCherryHelp": "Adicionar ajuda de remoção de cerejas",
+  "addCherryHelpMessage": "Você ficou sem ajuda de remoção de cerejas!",
+  "watchAdForCherry": "• Assistir anúncio para 1 remoção de cereja a mais",
+  "cherryHelpAdded": "🎉 Você recebeu 1 ajuda de remoção de cereja a mais!",
+  "settings": "Configurações",
+  "language": "Idioma",
+  "music": "Música",
+  "sound": "Som",
+  "about": "Sobre",
+  "version": "Versão",
+  "developer": "Desenvolvedor",
+  "fruits2048": "Fruits 2048",
+  "fruitGuide": "Guia de frutas",
+  "cherry": "Cereja",
+  "strawberry": "Morango", 
+  "grape": "Uva",
+  "orange": "Laranja",
+  "apple": "Maçã",
+  "pear": "Pera",
+  "peach": "Pêssego",
+  "mango": "Manga",
+  "pineapple": "Abacaxi",
+  "watermelon": "Melancia",
+  "melon": "Melão",
+  "coconut": "Coco",
+  "magicBasket": "Cesta mágica"
+} 
