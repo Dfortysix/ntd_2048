@@ -146,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.person),
                   title: Text(LocalizationHelper.getLocalizedString(context, 'developer')),
-                  subtitle: const Text('Fruits 2048 Team'),
+                  subtitle: const Text('Nguyen Tri Dung'),
                 ),
               ],
             ),
